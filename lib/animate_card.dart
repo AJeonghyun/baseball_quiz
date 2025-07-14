@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'dart:math';
 
 class QuoteCard extends StatefulWidget {
   final Color teamColor;

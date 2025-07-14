@@ -20,9 +20,6 @@ class _TeamSelectPageState extends State<TeamSelectPage> {
 
   @override
   Widget build(BuildContext context) {
-    final teamColor = kboTeams[selectedTeam]["color"] as Color;
-    final teamName = kboTeams[selectedTeam]["name"] as String;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('KBO 팀 선택'),

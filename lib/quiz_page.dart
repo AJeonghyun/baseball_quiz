@@ -68,7 +68,7 @@ class _QuizPageState extends State<QuizPage> {
   void showExplanationDialog() {
     final q = questions[currentIndex];
     final bool isCorrect = selectedOption == q["answer"];
-    final teamColor = kboTeams[widget.selectedTeam ?? 0]["color"] as Color;
+    final teamColor = kboTeams[widget.selectedTeam]["color"] as Color;
     showDialog(
       context: context,
       barrierDismissible: false,
