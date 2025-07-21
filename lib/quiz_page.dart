@@ -5,6 +5,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'kbo_teams.dart'; // 팀 색상 정보 import
 import 'result_page.dart'; // 결과 페이지 import
+import 'explanation_page.dart'; // 해설 페이지 import
 
 class QuizPage extends StatefulWidget {
   final int selectedTeam;
@@ -19,6 +20,7 @@ class _QuizPageState extends State<QuizPage> {
   int currentIndex = 0;
   int? selectedOption;
   bool showResult = false;
+  bool showExplanation = false; // 추가: 설명 표시 여부
   int correctCount = 0; // <- 추가
   @override
   void initState() {
@@ -57,12 +59,15 @@ class _QuizPageState extends State<QuizPage> {
     setState(() {
       selectedOption = idx;
       showResult = true;
-      if (isCorrect) correctCount++; // <- 정답 개수 누적
+      showExplanation = !isCorrect; // 오답일 때만 설명 표시
+      if (isCorrect) correctCount++;
     });
 
-    Future.delayed(const Duration(milliseconds: 300), () {
-      showExplanationDialog();
-    });
+    if (isCorrect) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        showExplanationDialog();
+      });
+    }
   }
 
   void showExplanationDialog() {
@@ -139,6 +144,7 @@ class _QuizPageState extends State<QuizPage> {
       currentIndex++;
       selectedOption = null;
       showResult = false;
+      showExplanation = false;
     });
   }
 
@@ -302,34 +308,69 @@ class _QuizPageState extends State<QuizPage> {
               ),
             ),
             const SizedBox(height: 32),
-            if (showResult)
-              Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: teamColor,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(120, 48),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+            // 오답이고 해설을 아직 안 본 경우 해설보기 버튼과 다음 문제 버튼을 가로로 배치
+            if (showResult &&
+                selectedOption != null &&
+                selectedOption != q["answer"])
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.lightbulb_outline),
+                      label: const Text("해설 보기"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber.shade600,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(0, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ExplanationPage(
+                              explanation: q["explanation"] ?? "설명이 없습니다.",
+                              teamColor: teamColor,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  onPressed: currentIndex < questions.length - 1
-                      ? nextQuestion
-                      : () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ResultPage(
-                                correctCount: correctCount,
-                                totalCount: questions.length,
-                                teamColor: teamColor,
-                              ),
-                            ),
-                          );
-                        },
-                  child: Text(
-                      currentIndex < questions.length - 1 ? "다음 문제" : "퀴즈 종료"),
-                ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: teamColor,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(0, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: currentIndex < questions.length - 1
+                          ? nextQuestion
+                          : () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ResultPage(
+                                    correctCount: correctCount,
+                                    totalCount: questions.length,
+                                    teamColor: teamColor,
+                                  ),
+                                ),
+                              );
+                            },
+                      child: Text(currentIndex < questions.length - 1
+                          ? "다음 문제"
+                          : "퀴즈 종료"),
+                    ),
+                  ),
+                ],
               ),
           ],
         ),

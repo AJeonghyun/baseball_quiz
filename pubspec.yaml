@@ -37,6 +37,7 @@ dependencies:
   auto_size_text: ^3.0.0
   just_audio: ^0.9.37
   provider: ^6.1.5
+  youtube_player_flutter: ^8.1.2
 
 dev_dependencies:
   flutter_test:

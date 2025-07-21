@@ -6,6 +6,7 @@ import 'quiz_page.dart';
 import 'team_select_page.dart';
 import 'kbo_teams.dart';
 import 'animate_card.dart';
+import 'baseball_dictionary_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -238,6 +239,34 @@ class _MainScreenState extends State<MainScreen> {
                                   ],
                                 ),
                               ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                      // 야구 용어 사전 바로가기
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.menu_book, size: 24),
+                        label: const Text(
+                          '야구 용어 사전',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: teamColor,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(double.infinity, 56),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const BaseballDictionaryPage(),
                             ),
                           );
                         },
