@@ -38,6 +38,7 @@ dependencies:
   just_audio: ^0.9.37
   provider: ^6.1.5
   youtube_player_flutter: ^8.1.2
+  langchain: ^0.4.2
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,7 @@ flutter:
   assets:
     - assets/quiz.json
     - assets/quotes.json
+    - assets/diamond.png
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
