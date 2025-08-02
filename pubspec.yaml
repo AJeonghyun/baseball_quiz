@@ -39,6 +39,7 @@ dependencies:
   provider: ^6.1.5
   youtube_player_flutter: ^8.1.2
   langchain: ^0.4.2
+  google_fonts: ^6.2.0
 
 dev_dependencies:
   flutter_test:
