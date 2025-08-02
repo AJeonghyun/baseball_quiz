@@ -38,8 +38,8 @@ dependencies:
   just_audio: ^0.9.37
   provider: ^6.1.5
   youtube_player_flutter: ^8.1.2
-  langchain: ^0.4.2
   google_fonts: ^6.2.0
+  dynamic_tabbar: ^1.0.9
 
 dev_dependencies:
   flutter_test:

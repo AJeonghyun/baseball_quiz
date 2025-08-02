@@ -16,13 +16,11 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
   late Map<String, List<Map<String, String>>> termsByCategory;
   late List<Map<String, String>> allTerms;
 
-  int selectedCategoryIndex = 0;
-
   @override
   void initState() {
     super.initState();
 
-    // 카테고리 4개(전체, 타자, 투수, 기타)로 축소
+    // "전체" 제거, "기타" → "기록", "수비" 카테고리 추가 예시
     final Map<String, List<Map<String, String>>> baseTerms = {
       "타자": [
         {
@@ -123,7 +121,19 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
           "youtubeId": "1Q8fG0TtVAY"
         },
       ],
-      "기타": [
+      "수비": [
+        {
+          "term": "실책",
+          "desc": "수비수가 평범한 플레이에서 실수하여 주자가 진루한 경우.",
+          "youtubeId": "w8yQJpP6f8k"
+        },
+        {
+          "term": "더블플레이",
+          "desc": "한 번의 플레이로 두 명의 주자를 아웃시키는 것.",
+          "youtubeId": "QwZT7T-TXT0"
+        },
+      ],
+      "기록": [
         {"term": "WAR", "desc": "대체 선수 대비 승리 기여도.", "youtubeId": "2NNax0aqqqA"},
         {
           "term": "OPS",
@@ -139,10 +149,7 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
     };
 
     allTerms = baseTerms.values.expand((list) => list).toList();
-    termsByCategory = {
-      "전체": allTerms,
-      ...baseTerms,
-    };
+    termsByCategory = baseTerms;
 
     _tabController =
         TabController(length: termsByCategory.keys.length, vsync: this);
@@ -219,61 +226,73 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
         backgroundColor: Colors.white,
         foregroundColor: Colors.indigo,
         elevation: 0,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "용어 또는 설명으로 검색",
-                prefixIcon: const Icon(Icons.search, color: Colors.indigo),
-                filled: true,
-                fillColor: Colors.indigo.withOpacity(0.06),
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(96),
+          child: Column(
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "용어 또는 설명으로 검색",
+                    prefixIcon: const Icon(Icons.search, color: Colors.indigo),
+                    filled: true,
+                    fillColor: Colors.indigo.withOpacity(0.06),
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  style: const TextStyle(fontSize: 16),
+                  onChanged: (value) {
+                    setState(() {
+                      searchText = value.trim();
+                    });
+                  },
                 ),
               ),
-              style: const TextStyle(fontSize: 16),
-              onChanged: (value) {
-                setState(() {
-                  searchText = value.trim();
-                });
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: SegmentedButton<String>(
-              segments: [
-                for (final cat in categories)
-                  ButtonSegment(
-                    value: cat,
-                    label: Text(cat, style: const TextStyle(fontSize: 14)),
-                  ),
-              ],
-              selected: <String>{categories[selectedCategoryIndex]},
-              onSelectionChanged: (Set<String> newSelection) {
-                setState(() {
-                  selectedCategoryIndex =
-                      categories.indexOf(newSelection.first);
-                });
-              },
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all(Colors.indigo.shade50),
-                foregroundColor: MaterialStateProperty.all(Colors.indigo),
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                )),
+              SizedBox(
+                height: 44,
+                child: TabBar(
+                  controller: _tabController,
+                  isScrollable: false, // 고정
+                  labelColor: Colors.indigo.shade700,
+                  unselectedLabelColor: Colors.indigo.shade200,
+                  labelStyle: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 17),
+                  unselectedLabelStyle:
+                      const TextStyle(fontWeight: FontWeight.normal),
+                  tabs: [
+                    for (final String cat in categories)
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width /
+                            categories.length,
+                        child: Center(
+                          child: Text(
+                            cat,
+                            style: const TextStyle(
+                              fontFamily: 'NotoSansKR',
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
+              const SizedBox(height: 2),
+            ],
           ),
-          Expanded(
-            child: getFilteredTerms(categories[selectedCategoryIndex]).isEmpty
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          for (final cat in categories)
+            getFilteredTerms(cat).isEmpty
                 ? const Center(
                     child: Text(
                       "검색 결과가 없습니다.",
@@ -283,16 +302,12 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
                 : ListView.builder(
                     padding:
                         const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                    itemCount:
-                        getFilteredTerms(categories[selectedCategoryIndex])
-                            .length,
+                    itemCount: getFilteredTerms(cat).length,
                     itemBuilder: (context, idx) {
-                      final t = getFilteredTerms(
-                          categories[selectedCategoryIndex])[idx];
+                      final t = getFilteredTerms(cat)[idx];
                       return buildTermCard(t);
                     },
                   ),
-          ),
         ],
       ),
     );
