@@ -40,26 +40,27 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MainScreen(),
+      home: const NavigationRoot(),
     );
   }
 }
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+// 네비게이션을 전역에서 관리하는 위젯
+class NavigationRoot extends StatefulWidget {
+  const NavigationRoot({super.key});
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<NavigationRoot> createState() => _NavigationRootState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _NavigationRootState extends State<NavigationRoot> {
+  int _selectedIndex = 0;
+
+  // 홈에서 필요한 상태 변수들
   List<Map<String, dynamic>> quotes = [];
   Map<String, dynamic>? currentQuote;
   int selectedTeam = 0;
-
-  // 🆕 오늘의 규칙/트리비아 state 변수 추가
   String? dailyRuleName;
   String? dailyRuleTrivia;
-
   Map<String, String>? todayTrivia;
 
   @override
@@ -94,8 +95,12 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final teamColor = kboTeams[selectedTeam]["color"] as Color;
 
-    return Scaffold(
-      appBar: AppBar(
+    Widget bodyWidget;
+    PreferredSizeWidget? appBarWidget;
+
+    if (_selectedIndex == 0) {
+      // 홈 화면(메인)
+      appBarWidget = AppBar(
         title: const Text(
           '야구 용어 퀴즈 & 상식',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
@@ -103,8 +108,8 @@ class _MainScreenState extends State<MainScreen> {
         centerTitle: true,
         backgroundColor: teamColor,
         foregroundColor: Colors.white,
-      ),
-      body: SafeArea(
+      );
+      bodyWidget = SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
@@ -125,12 +130,9 @@ class _MainScreenState extends State<MainScreen> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const BaseballTriviaPage(),
-                          ),
-                        );
+                        setState(() {
+                          _selectedIndex = 2; // 트리비아 탭으로 이동
+                        });
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -277,12 +279,9 @@ class _MainScreenState extends State<MainScreen> {
                     elevation: 0,
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const BaseballDictionaryPage(),
-                      ),
-                    );
+                    setState(() {
+                      _selectedIndex = 1;
+                    });
                   },
                 ),
                 const SizedBox(height: 24),
@@ -303,12 +302,9 @@ class _MainScreenState extends State<MainScreen> {
                     elevation: 0,
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const BaseballFieldPositionPage(),
-                      ),
-                    );
+                    setState(() {
+                      _selectedIndex = 3;
+                    });
                   },
                 ),
                 const SizedBox(height: 24),
@@ -337,11 +333,53 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // 하단 네비게이션(예시)
               ],
             ),
           ),
         ),
+      );
+    } else if (_selectedIndex == 1) {
+      appBarWidget = null;
+      bodyWidget = const BaseballDictionaryPage();
+    } else if (_selectedIndex == 2) {
+      appBarWidget = null;
+      bodyWidget = const BaseballTriviaPage();
+    } else {
+      appBarWidget = null;
+      bodyWidget = const BaseballFieldPositionPage();
+    }
+
+    return Scaffold(
+      appBar: appBarWidget,
+      body: bodyWidget,
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.indigo,
+        unselectedItemColor: Colors.grey,
+        onTap: (idx) {
+          setState(() {
+            _selectedIndex = idx;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: '홈',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book),
+            label: '용어사전',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_stories),
+            label: '알쓸야잡',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.sports_baseball),
+            label: '포지션',
+          ),
+        ],
       ),
     );
   }

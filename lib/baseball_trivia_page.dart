@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 
 class BaseballTriviaPage extends StatelessWidget {
-  // ruleName, trivia 파라미터를 추가
   final String? ruleName;
   final String? trivia;
+  final String? detail;
+  final String? category;
+  final String? fun;
 
   const BaseballTriviaPage({
     super.key,
     this.ruleName,
     this.trivia,
+    this.detail,
+    this.category,
+    this.fun,
   });
 
-  // 트리비아 샘플 데이터 (사전용)
+  // 트리비아 샘플 데이터 (카테고리, 재미도 등 포함)
   static final List<Map<String, String>> triviaList = [
     {
       'category': '역사/기록',
@@ -169,151 +174,273 @@ class BaseballTriviaPage extends StatelessWidget {
       'trivia': '은퇴경기를 치르는 선수는 정원 초과 등록이 허용되며, 경기가 끝나면 자동 말소된다. '
           '경기가 취소되면 1회에 한해 재등록할 수 있다.'
     }
+    // ...더 추가 가능...
   ];
 
   @override
   Widget build(BuildContext context) {
-    // ruleName, trivia가 있으면 상세, 없으면 전체 리스트
+    // 상세 페이지
     if (ruleName != null && trivia != null) {
       return Scaffold(
+        backgroundColor: const Color(0xFFF7F7F7),
         appBar: AppBar(
-          title: Text(ruleName!),
-          centerTitle: true,
-          backgroundColor: Colors.indigo,
-          foregroundColor: Colors.white,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: false,
+          automaticallyImplyLeading: false,
+          title: Row(
+            children: [
+              const Icon(Icons.lightbulb_outline,
+                  color: Color(0xFFF97B3F), size: 26),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  ruleName!,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 19,
+                    color: Colors.black87,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.black54),
+              onPressed: () => Navigator.pop(context),
+              tooltip: '닫기',
+            ),
+          ],
         ),
         body: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                ruleName!,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.indigo,
-                ),
-              ),
-              const SizedBox(height: 18),
-              Text(
                 trivia!,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   color: Colors.black87,
                   height: 1.6,
                 ),
               ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.menu_book),
-                  label: const Text('야구 트리비아 사전 전체 보기'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 48),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
+              if (detail != null && detail!.isNotEmpty) ...[
+                const SizedBox(height: 22),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF4F8F2),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const BaseballTriviaPage(),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '자세히 알아보기',
+                        style: TextStyle(
+                          color: Color(0xFF2D6A2D),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
-                    );
-                  },
+                      SizedBox(height: 6),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('메인으로'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.indigo,
-                    minimumSize: const Size(double.infinity, 48),
-                    side: const BorderSide(color: Colors.indigo),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, top: 2),
+                  child: Text(
+                    detail!,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.black87,
+                      height: 1.5,
                     ),
                   ),
-                  onPressed: () => Navigator.pop(context),
                 ),
+              ],
+              const Spacer(),
+              Row(
+                children: [
+                  if (category != null && category!.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 4, horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEE3D1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        category!,
+                        style: const TextStyle(
+                          color: Color(0xFFF97B3F),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  const Spacer(),
+                  if (fun != null && fun!.isNotEmpty)
+                    Row(
+                      children: [
+                        const Icon(Icons.star,
+                            color: Color(0xFFF9B03F), size: 20),
+                        const SizedBox(width: 3),
+                        Text(
+                          '재미도 $fun',
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
               ),
+              const SizedBox(height: 18),
             ],
           ),
         ),
       );
     }
 
-    // 전체 트리비아 사전 리스트
+    // 전체 트리비아 사전 리스트 (카드형)
     return Scaffold(
+      backgroundColor: const Color(0xFFF7F7F7),
       appBar: AppBar(
-        title: const Text('야구 트리비아 사전'),
-        centerTitle: true,
-        backgroundColor: Colors.indigo,
+        backgroundColor: const Color(0xFFF97B3F),
         foregroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: const Column(
+          children: [
+            Text('⚡️ 알쓸야잡'),
+            Text('알아두면 쓸데없는 야구 잡학사전',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
+          ],
+        ),
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-        itemCount: triviaList.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 16),
-        itemBuilder: (context, idx) {
-          final t = triviaList[idx];
-          return Card(
-            color: Colors.indigo.shade50,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-              title: Text(
-                t['term'] ?? '',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 19,
-                  color: Colors.indigo,
-                ),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if ((t['shortDesc'] ?? '').isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      t['shortDesc'] ?? '',
-                      style:
-                          const TextStyle(fontSize: 15, color: Colors.black87),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+              itemCount: triviaList.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 18),
+              itemBuilder: (context, idx) {
+                final t = triviaList[idx];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BaseballTriviaPage(
+                          ruleName: t['term'],
+                          trivia: t['trivia'],
+                          detail: t['detail'],
+                          category: t['category'],
+                          fun: t['fun'],
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                  const SizedBox(height: 10),
-                  Text(
-                    t['trivia'] ?? '',
-                    style: const TextStyle(fontSize: 15, color: Colors.black54),
-                  ),
-                ],
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BaseballTriviaPage(
-                      ruleName: t['term'],
-                      trivia: t['trivia'],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.lightbulb_outline,
+                                  color: Color(0xFFF97B3F), size: 22),
+                              const SizedBox(width: 7),
+                              Expanded(
+                                child: Text(
+                                  t['term'] ?? '',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            t['trivia'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 3, horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFEE3D1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  t['category'] ?? '',
+                                  style: const TextStyle(
+                                    color: Color(0xFFF97B3F),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                              const Spacer(),
+                              if (t['fun'] != null)
+                                Row(
+                                  children: [
+                                    const Icon(Icons.star,
+                                        color: Color(0xFFF9B03F), size: 18),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      '재미도 ${t['fun']}',
+                                      style: const TextStyle(
+                                        color: Colors.black54,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
               },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
