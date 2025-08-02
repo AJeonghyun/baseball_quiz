@@ -3,11 +3,10 @@ import 'dart:math';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'quiz_page.dart';
-import 'team_select_page.dart';
 import 'kbo_teams.dart';
-import 'animate_card.dart';
 import 'baseball_dictionary_page.dart';
 import 'baseball_field_position_page.dart';
+import 'baseball_trivia_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -57,10 +56,20 @@ class _MainScreenState extends State<MainScreen> {
   Map<String, dynamic>? currentQuote;
   int selectedTeam = 0;
 
+  // 🆕 오늘의 규칙/트리비아 state 변수 추가
+  String? dailyRuleName;
+  String? dailyRuleTrivia;
+
+  Map<String, String>? todayTrivia;
+
   @override
   void initState() {
     super.initState();
     loadQuotes();
+
+    // 트리비아 샘플 데이터 BaseballTriviaPage에서 가져오기
+    final triviaList = BaseballTriviaPage.triviaList;
+    todayTrivia = triviaList.isNotEmpty ? (triviaList..shuffle()).first : null;
   }
 
   Future<void> loadQuotes() async {
@@ -84,7 +93,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final teamColor = kboTeams[selectedTeam]["color"] as Color;
-    final teamName = kboTeams[selectedTeam]["name"] as String;
 
     return Scaffold(
       appBar: AppBar(
@@ -96,243 +104,245 @@ class _MainScreenState extends State<MainScreen> {
         backgroundColor: teamColor,
         foregroundColor: Colors.white,
       ),
-      body: quotes.isEmpty || currentQuote == null
-          ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // 팀 대표 카드
-                      Card(
-                        color: teamColor.withOpacity(0.12),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 18, horizontal: 16),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: teamColor,
-                                child: const Icon(Icons.sports_baseball,
-                                    color: Colors.white),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 오늘의 규칙 카드 부분만 수정
+                if (dailyRuleName != null && dailyRuleTrivia != null)
+                  const SizedBox(height: 24),
+                // 오늘의 트리비아 카드
+                if (todayTrivia != null)
+                  Card(
+                    color: Colors.white,
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const BaseballTriviaPage(),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '오늘의 알쓸야잡',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
+                            ),
+                            Text(
+                              todayTrivia!['term'] ?? '',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.indigo,
+                              ),
+                            ),
+                            if ((todayTrivia!['shortDesc'] ?? '').isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(
-                                  teamName,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: teamColor,
+                                  todayTrivia!['shortDesc'] ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.indigo,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
-                              TextButton.icon(
-                                onPressed: () async {
-                                  final idx = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => TeamSelectPage(
-                                          selectedTeam: selectedTeam),
-                                    ),
-                                  );
-                                  if (idx != null) {
-                                    setState(() {
-                                      selectedTeam = idx;
-                                    });
-                                  }
-                                },
-                                icon: Icon(Icons.edit, color: teamColor),
-                                label: Text('변경',
-                                    style: TextStyle(color: teamColor)),
-                                style: TextButton.styleFrom(
-                                  minimumSize: const Size(0, 32),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      // 오늘의 명언 카드
-                      QuoteCard(teamColor: teamColor),
-                      const SizedBox(height: 28),
-                      // 퀴즈 바로가기
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.quiz, size: 24),
-                        label: const Text(
-                          '퀴즈 풀기',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: teamColor,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size(double.infinity, 56),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 0,
-                        ),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => Dialog(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.quiz,
-                                        color: teamColor, size: 40),
-                                    const SizedBox(height: 16),
-                                    const Text(
-                                      '야구 용어 퀴즈 안내',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    const Text(
-                                      '총 10문제가 랜덤으로 출제됩니다.\n각 문제의 정답을 선택하면 해설과 함께 정답 여부가 표시됩니다.',
-                                      style:
-                                          TextStyle(fontSize: 16, height: 1.5),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 24),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: teamColor,
-                                          foregroundColor: Colors.white,
-                                          minimumSize: const Size(0, 48),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pop(context); // 안내창 닫기
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => QuizPage(
-                                                    selectedTeam:
-                                                        selectedTeam)),
-                                          );
-                                        },
-                                        child: const Text('퀴즈 시작',
-                                            style: TextStyle(fontSize: 18)),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                      // 야구 용어 사전 바로가기
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.menu_book, size: 24),
-                        label: const Text(
-                          '야구 용어 사전',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: teamColor,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size(double.infinity, 56),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 0,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const BaseballDictionaryPage(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                      // 야구장 포지션 안내 바로가기
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.sports_baseball, size: 24),
-                        label: const Text(
-                          '야구장 포지션 안내',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: teamColor,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size(double.infinity, 56),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 0,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const BaseballFieldPositionPage(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                      // 앱 안내 카드
-                      Card(
-                        color: Colors.grey.shade100,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 18, horizontal: 16),
-                          child: Row(
-                            children: [
-                              Icon(Icons.info_outline,
-                                  color: teamColor, size: 28),
-                              const SizedBox(width: 12),
-                              const Expanded(
+                            if ((todayTrivia!['trivia'] ?? '').isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12.0),
                                 child: Text(
-                                  '야구 용어와 상식을 재미있게 배워보세요!',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.black87),
+                                  todayTrivia!['trivia'] ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black87,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ),
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 24),
+                // 퀴즈 바로가기
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.quiz, size: 24),
+                  label: const Text(
+                    '퀴즈 풀기',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: teamColor,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 56),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => Dialog(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.quiz, color: teamColor, size: 40),
+                              const SizedBox(height: 16),
+                              const Text(
+                                '야구 용어 퀴즈 안내',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                '총 10문제가 랜덤으로 출제됩니다.\n각 문제의 정답을 선택하면 해설과 함께 정답 여부가 표시됩니다.',
+                                style: TextStyle(fontSize: 16, height: 1.5),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 24),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: teamColor,
+                                    foregroundColor: Colors.white,
+                                    minimumSize: const Size(0, 48),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context); // 안내창 닫기
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => QuizPage(
+                                              selectedTeam: selectedTeam)),
+                                    );
+                                  },
+                                  child: const Text('퀴즈 시작',
+                                      style: TextStyle(fontSize: 18)),
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      // 하단 네비게이션(예시)
-                    ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+                // 야구 용어 사전 바로가기
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.menu_book, size: 24),
+                  label: const Text(
+                    '야구 용어 사전',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: teamColor,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 56),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BaseballDictionaryPage(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+                // 야구장 포지션 안내 바로가기
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.sports_baseball, size: 24),
+                  label: const Text(
+                    '야구장 포지션 안내',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: teamColor,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 56),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BaseballFieldPositionPage(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+                // 앱 안내 카드
+                Card(
+                  color: Colors.grey.shade100,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 18, horizontal: 16),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline, color: teamColor, size: 28),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Text(
+                            '야구 용어와 상식을 재미있게 배워보세요!',
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.black87),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 24),
+                // 하단 네비게이션(예시)
+              ],
             ),
+          ),
+        ),
+      ),
     );
   }
 }
