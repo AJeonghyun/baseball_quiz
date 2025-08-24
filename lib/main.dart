@@ -63,14 +63,17 @@ class _NavigationRootState extends State<NavigationRoot> {
   String? dailyRuleTrivia;
   Map<String, String>? todayTrivia;
 
+  List<Map<String, dynamic>> triviaList = [];
+
   @override
   void initState() {
     super.initState();
     loadQuotes();
+    loadTrivia();
 
     // 트리비아 샘플 데이터 BaseballTriviaPage에서 가져오기
-    final triviaList = BaseballTriviaPage.triviaList;
-    todayTrivia = triviaList.isNotEmpty ? (triviaList..shuffle()).first : null;
+    // final triviaList = BaseballTriviaPage.triviaList;
+    // todayTrivia = triviaList.isNotEmpty ? (triviaList..shuffle()).first : null;
   }
 
   Future<void> loadQuotes() async {
@@ -80,6 +83,17 @@ class _NavigationRootState extends State<NavigationRoot> {
       quotes = jsonData.cast<Map<String, dynamic>>();
       currentQuote =
           quotes.isNotEmpty ? quotes[Random().nextInt(quotes.length)] : null;
+    });
+  }
+
+  Future<void> loadTrivia() async {
+    final String jsonString = await rootBundle.loadString('assets/trivia.json');
+    final List<dynamic> jsonData = json.decode(jsonString);
+    setState(() {
+      triviaList = jsonData.cast<Map<String, dynamic>>();
+      todayTrivia = triviaList.isNotEmpty
+          ? ((triviaList.toList()..shuffle()).first.cast<String, String>())
+          : null;
     });
   }
 
@@ -116,9 +130,6 @@ class _NavigationRootState extends State<NavigationRoot> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // 오늘의 규칙 카드 부분만 수정
-                if (dailyRuleName != null && dailyRuleTrivia != null)
-                  const SizedBox(height: 24),
                 // 오늘의 트리비아 카드
                 if (todayTrivia != null)
                   Card(
@@ -187,125 +198,97 @@ class _NavigationRootState extends State<NavigationRoot> {
                     ),
                   ),
                 const SizedBox(height: 24),
-                // 퀴즈 바로가기
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.quiz, size: 24),
-                  label: const Text(
-                    '퀴즈 풀기',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: teamColor,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => Dialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.quiz, color: teamColor, size: 40),
-                              const SizedBox(height: 16),
-                              const Text(
-                                '야구 용어 퀴즈 안내',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              const Text(
-                                '총 10문제가 랜덤으로 출제됩니다.\n각 문제의 정답을 선택하면 해설과 함께 정답 여부가 표시됩니다.',
-                                style: TextStyle(fontSize: 16, height: 1.5),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 24),
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: teamColor,
-                                    foregroundColor: Colors.white,
-                                    minimumSize: const Size(0, 48),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
+                // 퀴즈 바로가기 카드
+                Card(
+                  color: Colors.white,
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => Dialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.quiz, color: teamColor, size: 40),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  '야구 용어 퀴즈 안내',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  onPressed: () {
-                                    Navigator.pop(context); // 안내창 닫기
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => QuizPage(
-                                              selectedTeam: selectedTeam)),
-                                    );
-                                  },
-                                  child: const Text('퀴즈 시작',
-                                      style: TextStyle(fontSize: 18)),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 12),
+                                const Text(
+                                  '총 10문제가 랜덤으로 출제됩니다.\n각 문제의 정답을 선택하면 해설과 함께 정답 여부가 표시됩니다.',
+                                  style: TextStyle(fontSize: 16, height: 1.5),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 24),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: teamColor,
+                                      foregroundColor: Colors.white,
+                                      minimumSize: const Size(0, 48),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => QuizPage(
+                                                selectedTeam: selectedTeam)),
+                                      );
+                                    },
+                                    child: const Text('퀴즈 시작',
+                                        style: TextStyle(fontSize: 18)),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
+                      );
+                    },
+                    child: const Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 22, horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '오늘의 퀴즈 도전',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            '랜덤 10문제를 풀며 야구 지식을 확인하세요!',
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black87,
+                                height: 1.5),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 24),
-                // 야구 용어 사전 바로가기
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.menu_book, size: 24),
-                  label: const Text(
-                    '야구 용어 사전',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: teamColor,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
                     ),
-                    elevation: 0,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _selectedIndex = 1;
-                    });
-                  },
-                ),
-                const SizedBox(height: 24),
-                // 야구장 포지션 안내 바로가기
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.sports_baseball, size: 24),
-                  label: const Text(
-                    '야구장 포지션 안내',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: teamColor,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _selectedIndex = 3;
-                    });
-                  },
                 ),
                 const SizedBox(height: 24),
                 // 앱 안내 카드
@@ -360,6 +343,12 @@ class _NavigationRootState extends State<NavigationRoot> {
         onTap: (idx) {
           setState(() {
             _selectedIndex = idx;
+            if (_selectedIndex == 0) {
+              todayTrivia = triviaList.isNotEmpty
+                  ? Map<String, String>.from(
+                      (triviaList.toList()..shuffle()).first)
+                  : null;
+            }
           });
         },
         items: const [

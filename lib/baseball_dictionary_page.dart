@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 import 'baseball_term_detail_page.dart';
 
 class BaseballDictionaryPage extends StatefulWidget {
@@ -15,148 +17,38 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
 
   late Map<String, List<Map<String, String>>> termsByCategory;
   late List<Map<String, String>> allTerms;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    loadTermsFromJson();
+  }
 
-    // "전체" 제거, "기타" → "기록", "수비" 카테고리 추가 예시
-    final Map<String, List<Map<String, String>>> baseTerms = {
-      "타자": [
-        {
-          "term": "홈런",
-          "desc": "타자가 친 공이 외야 담장을 넘어가는 것. 1점 이상 득점 가능.",
-          "youtubeId": "2NNax0aqqqA"
-        },
-        {
-          "term": "볼넷",
-          "desc": "투수가 네 번 볼을 던져 타자가 1루로 진루하는 것.",
-          "youtubeId": "w8yQJpP6f8k"
-        },
-        {
-          "term": "삼진",
-          "desc": "타자가 세 번 스트라이크를 당해 아웃되는 것.",
-          "youtubeId": "1Q8fG0TtVAY"
-        },
-        {
-          "term": "타율",
-          "desc": "타자가 안타를 친 비율. 안타 ÷ 타수.",
-          "youtubeId": "kFvFz2v1Qq4"
-        },
-        {
-          "term": "출루율",
-          "desc": "타자가 출루한 비율. (안타 + 볼넷) ÷ 타수.",
-          "youtubeId": "2NNax0aqqqA"
-        },
-        {
-          "term": "장타율",
-          "desc": "타자가 장타를 친 비율. (1루타 + 2루타*2 + 3루타*3 + 홈런*4) ÷ 타수.",
-          "youtubeId": "w8yQJpP6f8k"
-        },
-        {
-          "term": "OPS",
-          "desc": "출루율 + 장타율. 타자의 종합적인 타격 능력.",
-          "youtubeId": "kFvFz2v1Qq4"
-        },
-        {
-          "term": "타점",
-          "desc": "타자가 친 공으로 주자가 득점한 횟수.",
-          "youtubeId": "QwZT7T-TXT0"
-        },
-        {
-          "term": "도루",
-          "desc": "타자가 투수가 던지는 틈을 타 다음 베이스로 진루하는 것.",
-          "youtubeId": "2NNax0aqqqA"
-        },
-        {
-          "term": "병살타",
-          "desc": "타자가 친 공으로 두 명의 주자가 아웃되는 것.",
-          "youtubeId": "1Q8fG0TtVAY"
-        },
-        {
-          "term": "플라이",
-          "desc": "타자가 친 공이 공중으로 뜨는 것. 주자가 진루할 수 있는 상황.",
-          "youtubeId": "kFvFz2v1Qq4"
-        },
-        {
-          "term": "안타",
-          "desc": "타자가 친 공이 내야를 넘어가거나 외야에 떨어져 주자가 진루하는 것.",
-          "youtubeId": "w8yQJpP6f8k"
-        },
-        {
-          "term": "2루타",
-          "desc": "타자가 친 공이 2루까지 진루하는 안타.",
-          "youtubeId": "QwZT7T-TXT0"
-        },
-        {
-          "term": "3루타",
-          "desc": "타자가 친 공이 3루까지 진루하는 안타.",
-          "youtubeId": "2NNax0aqqqA"
-        },
-        {
-          "term": "사구",
-          "desc": "투수가 공을 던져 타자가 맞거나 몸에 맞아 1루로 진루하는 것.",
-          "youtubeId": "kFvFz2v1Qq4"
-        },
-      ],
-      "투수": [
-        {
-          "term": "ERA",
-          "desc": "평균자책점. 투수가 9이닝 동안 허용한 자책점의 평균.",
-          "youtubeId": "w8yQJpP6f8k"
-        },
-        {
-          "term": "WHIP",
-          "desc": "이닝당 허용한 주자 수. (볼넷+피안타) ÷ 이닝.",
-          "youtubeId": "QwZT7T-TXT0"
-        },
-        {
-          "term": "세이브",
-          "desc": "투수가 팀의 리드를 지키며 경기를 마무리했을 때 기록.",
-          "youtubeId": "2NNax0aqqqA"
-        },
-        {
-          "term": "홀드",
-          "desc": "구원 투수가 리드를 지키고 마무리 투수에게 넘겨준 경우.",
-          "youtubeId": "1Q8fG0TtVAY"
-        },
-      ],
-      "수비": [
-        {
-          "term": "실책",
-          "desc": "수비수가 평범한 플레이에서 실수하여 주자가 진루한 경우.",
-          "youtubeId": "w8yQJpP6f8k"
-        },
-        {
-          "term": "더블플레이",
-          "desc": "한 번의 플레이로 두 명의 주자를 아웃시키는 것.",
-          "youtubeId": "QwZT7T-TXT0"
-        },
-      ],
-      "기록": [
-        {"term": "WAR", "desc": "대체 선수 대비 승리 기여도.", "youtubeId": "2NNax0aqqqA"},
-        {
-          "term": "OPS",
-          "desc": "출루율 + 장타율. 타자의 종합적인 타격 능력.",
-          "youtubeId": "kFvFz2v1Qq4"
-        },
-        {
-          "term": "QS",
-          "desc": "선발 투수가 6이닝 이상 3자책점 이하로 던진 경기.",
-          "youtubeId": "1Q8fG0TtVAY"
-        },
-      ],
-    };
+  Future<void> loadTermsFromJson() async {
+    final String jsonString =
+        await rootBundle.loadString('assets/dictionary.json');
+    final Map<String, dynamic> jsonData = json.decode(jsonString);
 
-    allTerms = baseTerms.values.expand((list) => list).toList();
-    termsByCategory = baseTerms;
+    // Map<String, List<Map<String, String>>> 형태로 변환
+    termsByCategory = {};
+    for (final entry in jsonData.entries) {
+      final List<dynamic> list = entry.value;
+      termsByCategory[entry.key] =
+          list.map((e) => Map<String, String>.from(e)).toList();
+    }
+    allTerms = termsByCategory.values.expand((list) => list).toList();
 
     _tabController =
         TabController(length: termsByCategory.keys.length, vsync: this);
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   List<Map<String, String>> getFilteredTerms(String category) {
-    final terms = termsByCategory[category]!;
+    final terms = termsByCategory[category] ?? [];
     if (searchText.isEmpty) return terms;
     return terms
         .where((t) =>
@@ -217,6 +109,11 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     final List<String> categories =
         termsByCategory.keys.toList().cast<String>();
     return Scaffold(
@@ -238,15 +135,24 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
                     hintText: "용어 또는 설명으로 검색",
                     prefixIcon: const Icon(Icons.search, color: Colors.indigo),
                     filled: true,
-                    fillColor: Colors.indigo.withOpacity(0.06),
+                    fillColor: Colors.indigo.withOpacity(0.08),
                     contentPadding:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 14),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide.none,
                     ),
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF8A98B2),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                  style: const TextStyle(fontSize: 16),
+                  style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.indigo,
+                      fontWeight: FontWeight.w500),
+                  cursorColor: Colors.indigo,
                   onChanged: (value) {
                     setState(() {
                       searchText = value.trim();

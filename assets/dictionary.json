@@ -1,0 +1,1017 @@
+{
+  "타자": [
+    {
+      "term": "홈런",
+      "desc": "타자가 친 공이 외야 담장을 넘어가는 것. 1점 이상 득점 가능.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "볼넷",
+      "desc": "투수가 네 번 볼을 던져 타자가 1루로 진루하는 것.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "삼진",
+      "desc": "타자가 세 번 스트라이크를 당해 아웃되는 것.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "타율",
+      "desc": "타자가 안타를 친 비율. 안타 ÷ 타수.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "출루율",
+      "desc": "타자가 출루한 비율. (안타 + 볼넷) ÷ 타수.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "장타율",
+      "desc": "타자가 장타를 친 비율. (1루타 + 2루타*2 + 3루타*3 + 홈런*4) ÷ 타수.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "OPS",
+      "desc": "출루율 + 장타율. 타자의 종합적인 타격 능력.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "타점",
+      "desc": "타자가 친 공으로 주자가 득점한 횟수.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "도루",
+      "desc": "타자가 투수가 던지는 틈을 타 다음 베이스로 진루하는 것.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "병살타",
+      "desc": "타자가 친 공으로 두 명의 주자가 아웃되는 것.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "플라이",
+      "desc": "타자가 친 공이 공중으로 뜨는 것. 주자가 진루할 수 있는 상황.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "안타",
+      "desc": "타자가 친 공이 내야를 넘어가거나 외야에 떨어져 주자가 진루하는 것.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "2루타",
+      "desc": "타자가 친 공이 2루까지 진루하는 안타.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "3루타",
+      "desc": "타자가 친 공이 3루까지 진루하는 안타.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "사구",
+      "desc": "투수가 공을 던져 타자가 맞거나 몸에 맞아 1루로 진루하는 것.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "출루",
+      "desc": "타자가 볼넷, 안타, 사구 등으로 1루 이상에 진루하는 것.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "루타",
+      "desc": "타자가 진루한 베이스 수의 합계.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "슬러거",
+      "desc": "장타력과 출루 능력이 뛰어난 타자.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "번트",
+      "desc": "타자가 공을 강하게 치지 않고 살짝 밀어내는 타격법.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "희생플라이",
+      "desc": "아웃이 되지만 주자가 진루하거나 득점하는 타격.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "사이클링 히트",
+      "desc": "한 경기에서 1루타, 2루타, 3루타, 홈런을 모두 기록하는 것.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "멀티히트",
+      "desc": "한 경기에서 두 개 이상의 안타를 기록하는 것.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "클러치 히트",
+      "desc": "중요한 순간에 터지는 결정적인 안타.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "만루홈런",
+      "desc": "주자가 만루일 때 친 홈런. 4점 득점 가능.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "끝내기 홈런",
+      "desc": "연장이나 마지막 이닝에 경기를 끝내는 홈런.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "리드오프",
+      "desc": "타순에서 첫 번째 타자.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "클린업트리오",
+      "desc": "타순 3,4,5번 타자를 지칭하는 말로 중심 타선.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "타격왕",
+      "desc": "한 시즌 동안 가장 높은 타율을 기록한 선수.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "홈런왕",
+      "desc": "한 시즌 동안 가장 많은 홈런을 기록한 선수.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "출루율왕",
+      "desc": "한 시즌 동안 가장 높은 출루율을 기록한 선수.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "장타율왕",
+      "desc": "한 시즌 동안 가장 높은 장타율을 기록한 선수.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "타격폼",
+      "desc": "타자가 공을 칠 때의 자세와 동작.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "스윙궤적",
+      "desc": "타자가 배트로 그리는 스윙의 경로.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "풀카운트",
+      "desc": "스트라이크와 볼이 각각 3개씩인 상황.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "헛스윙",
+      "desc": "공을 치려 했으나 빗나간 스윙.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "파울",
+      "desc": "타격 후 공이 규정 구역 밖으로 나가는 것.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "파울팁",
+      "desc": "타격 시 공이 배트에 살짝 맞고 포수 글러브에 잡히는 것.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "외야플라이",
+      "desc": "외야에서 잡히는 플라이볼.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "내야안타",
+      "desc": "내야에서 떨어져 주자가 진루하는 안타.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "병살타유도",
+      "desc": "투수가 타자를 병살타로 유도하는 것.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "타순",
+      "desc": "타자의 공격 순서.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "타석",
+      "desc": "타자가 공을 치기 위해 서는 위치.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "타점왕",
+      "desc": "한 시즌 동안 가장 많은 타점을 기록한 선수.",
+      "youtubeId": "2NNax0aqqqA"
+    }
+  ],
+  "투수": [
+    {
+      "term": "ERA",
+      "desc": "평균자책점. 투수가 9이닝 동안 허용한 자책점의 평균.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "WHIP",
+      "desc": "이닝당 허용한 주자 수. (볼넷+피안타) ÷ 이닝.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "세이브",
+      "desc": "투수가 팀의 리드를 지키며 경기를 마무리했을 때 기록.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "홀드",
+      "desc": "구원 투수가 리드를 지키고 마무리 투수에게 넘겨준 경우.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "완투",
+      "desc": "선발 투수가 경기를 끝까지 던지는 것.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "완봉",
+      "desc": "투수가 상대 팀에 점수를 주지 않고 경기를 끝내는 것.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "노히트노런",
+      "desc": "상대 팀에게 안타와 점수를 모두 허용하지 않는 투구.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "퍼펙트게임",
+      "desc": "모든 타자를 아웃시키고 단 한 명도 출루시키지 않는 경기.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "선발",
+      "desc": "경기 시작 시 마운드에 올라가는 투수.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "구원",
+      "desc": "선발 투수를 대신해 마운드에 올라가는 투수.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "마무리",
+      "desc": "경기 마지막을 책임지는 구원 투수.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "불펜",
+      "desc": "구원 투수들이 몸을 푸는 장소 및 구원 투수 전체를 의미.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "선발승",
+      "desc": "선발 투수가 승리 투수가 되는 것.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "구원승",
+      "desc": "구원 투수가 승리 투수가 되는 것.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "블론세이브",
+      "desc": "세이브 상황에서 점수를 허용해 세이브를 실패하는 것.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "투구수",
+      "desc": "한 투수가 던진 공의 총 개수.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "구속",
+      "desc": "투구의 빠르기.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "변화구",
+      "desc": "속도와 궤적이 다른 다양한 구종.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "직구",
+      "desc": "빠르고 직선적인 투구.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "슬라이더",
+      "desc": "옆으로 휘는 변화구.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "커브",
+      "desc": "아래로 크게 떨어지는 변화구.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "체인지업",
+      "desc": "직구와 비슷한 폼으로 던지지만 느린 변화구.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "싱커",
+      "desc": "하강하는 효과가 있는 변화구.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "포크볼",
+      "desc": "공이 떨어지는 효과가 큰 변화구.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "너클볼",
+      "desc": "회전이 거의 없는 불규칙하게 움직이는 공.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "투심",
+      "desc": "두 손가락으로 잡아 던지는 빠른 공.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "컷패스트볼",
+      "desc": "살짝 옆으로 휘는 빠른 공.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "투구폼",
+      "desc": "투수가 공을 던질 때의 자세와 동작.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "투구간격",
+      "desc": "투수가 공을 던지는 속도 및 템포.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "제구력",
+      "desc": "공을 원하는 위치에 정확히 던지는 능력.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "볼배합",
+      "desc": "투수가 다양한 구종과 코스를 조합하는 전략.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "투수코치",
+      "desc": "투수들의 훈련과 전략을 지도하는 코치.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "사이드암",
+      "desc": "팔을 옆으로 뻗어 던지는 투구 방식.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "언더핸드",
+      "desc": "팔을 아래에서 위로 던지는 투구 방식.",
+      "youtubeId": "QwZT7T-TXT0"
+    }
+  ],
+  "수비": [
+    {
+      "term": "실책",
+      "desc": "수비수가 평범한 플레이에서 실수하여 주자가 진루한 경우.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "더블플레이",
+      "desc": "한 번의 플레이로 두 명의 주자를 아웃시키는 것.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "포수",
+      "desc": "투수가 던진 공을 받는 수비 위치.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "1루수",
+      "desc": "1루를 수비하는 선수.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "2루수",
+      "desc": "2루를 수비하는 선수.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "3루수",
+      "desc": "3루를 수비하는 선수.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "유격수",
+      "desc": "1루와 2루 사이를 수비하는 선수.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "좌익수",
+      "desc": "외야의 왼쪽을 수비하는 선수.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "중견수",
+      "desc": "외야의 중앙을 수비하는 선수.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "우익수",
+      "desc": "외야의 오른쪽을 수비하는 선수.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "내야수",
+      "desc": "내야를 수비하는 선수 전체를 의미.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "외야수",
+      "desc": "외야를 수비하는 선수 전체를 의미.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "수비시프트",
+      "desc": "타자의 타격 성향에 따라 수비 위치를 조정하는 전략.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "중계플레이",
+      "desc": "수비수가 공을 잡아 다른 수비수에게 송구하는 과정.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "더블컷",
+      "desc": "더블플레이 시 중간에서 공을 받는 플레이.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "태그업",
+      "desc": "플라이볼이 잡힌 후 주자가 베이스를 떠나 진루하는 것.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "릴레이플레이",
+      "desc": "외야에서 내야로 공을 연결하는 수비 플레이.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "펜스플레이",
+      "desc": "외야수가 펜스 근처에서 하는 수비 플레이.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "글러브터치",
+      "desc": "수비수가 글러브로 공을 잡는 동작.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "다이빙캐치",
+      "desc": "몸을 던져 공을 잡는 수비 플레이.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "점프캐치",
+      "desc": "점프하여 공을 잡는 수비 플레이.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "송구",
+      "desc": "수비수가 공을 다른 선수에게 던지는 것.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "송구에러",
+      "desc": "송구 과정에서 실수가 발생하는 경우.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "포구",
+      "desc": "수비수가 공을 잡는 동작.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "수비율",
+      "desc": "수비 성공률. (수비 기회 - 실책) ÷ 수비 기회.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "어시스트",
+      "desc": "아웃을 만드는 데 도움을 준 수비 플레이.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "병살연결",
+      "desc": "병살타 상황에서 수비가 연속으로 아웃을 만드는 것.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "포스아웃",
+      "desc": "주자가 다음 베이스로 강제로 진루해야 할 때의 아웃.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "태그아웃",
+      "desc": "주자를 태그하여 아웃시키는 것.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "인터피어런스",
+      "desc": "수비 또는 주자가 규칙을 위반하는 행위.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "어필플레이",
+      "desc": "심판에게 아웃이나 규칙 위반을 요구하는 플레이.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "수비위치",
+      "desc": "수비수가 서 있는 위치.",
+      "youtubeId": "1Q8fG0TtVAY"
+    }
+  ],
+  "기록": [
+    {
+      "term": "WAR",
+      "desc": "대체 선수 대비 승리 기여도.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "OPS",
+      "desc": "출루율 + 장타율. 타자의 종합적인 타격 능력.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "QS",
+      "desc": "선발 투수가 6이닝 이상 3자책점 이하로 던진 경기.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "wRC+",
+      "desc": "가중 득점 창출력 지표. 리그 평균을 100으로 두고 타자의 득점 기여도를 상대적으로 비교한 수치.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "FIP",
+      "desc": "수비 무관 평균자책점. 투수의 볼넷, 삼진, 피홈런만 고려하여 산출하는 지표.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "BABIP",
+      "desc": "인플레이 타구 타율. (안타-홈런) ÷ (타수-삼진-홈런+희생플라이).",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "ISO",
+      "desc": "순수 장타력 지표. 장타율 - 타율.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "K/BB",
+      "desc": "삼진과 볼넷 비율. 투수의 제구력과 삼진 능력을 함께 보여주는 지표.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "AVG",
+      "desc": "타율. 안타 ÷ 타수.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "OBP",
+      "desc": "출루율. (안타 + 볼넷 + 사구) ÷ (타수 + 볼넷 + 사구 + 희생플라이).",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "SLG",
+      "desc": "장타율. 총루타 ÷ 타수.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "OPS+",
+      "desc": "리그 평균 대비 OPS를 보정한 지표.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "ERA+",
+      "desc": "리그 평균 대비 ERA를 보정한 지표.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "K/9",
+      "desc": "9이닝당 삼진 개수.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "BB/9",
+      "desc": "9이닝당 볼넷 개수.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "HR/9",
+      "desc": "9이닝당 허용한 홈런 개수.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "WPA",
+      "desc": "승리 기여도. 경기 상황에서 승리에 미친 영향력.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "RE24",
+      "desc": "24초 간격 승리 기여도.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "clutch",
+      "desc": "위기 상황에서의 선수 퍼포먼스 지표.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "LI",
+      "desc": "레버리지 인덱스. 경기 상황의 중요도.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "GIDP",
+      "desc": "병살타 수.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "RISP",
+      "desc": "주자 득점권 타율.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "SB%",
+      "desc": "도루 성공률.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "CS%",
+      "desc": "도루 실패율.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "wOBA",
+      "desc": "가중 출루율. 타격 성적을 종합적으로 평가.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "xwOBA",
+      "desc": "예상 가중 출루율. 타구의 질을 기반으로 한 평가.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "xBA",
+      "desc": "예상 타율.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "xSLG",
+      "desc": "예상 장타율.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "Barrel%",
+      "desc": "최적의 타구 비율.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "HardHit%",
+      "desc": "강한 타구 비율.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "ExitVelocity",
+      "desc": "타구 속도.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "LaunchAngle",
+      "desc": "타구 발사 각도.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "SpinRate",
+      "desc": "공 회전 속도.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "K%",
+      "desc": "타석 대비 삼진 비율.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "BB%",
+      "desc": "타석 대비 볼넷 비율.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "Contact%",
+      "desc": "타석 대비 타격 접촉 비율.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "SwStr%",
+      "desc": "스윙 대비 헛스윙 비율.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "Pull%",
+      "desc": "당겨 치는 타구 비율.",
+      "youtubeId": "kFvFz2v1Qq4"
+    },
+    {
+      "term": "Oppo%",
+      "desc": "밀어 치는 타구 비율.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "ISO+",
+      "desc": "리그 평균 대비 순수 장타력 지표 보정값.",
+      "youtubeId": "w8yQJpP6f8k"
+    }
+  ],
+  "규칙": [
+    {
+      "term": "인필드플라이",
+      "desc": "무사 또는 1사 주자 1,2루 상황에서 내야 플라이 타구가 고의로 떨어뜨려 병살을 만들 수 있는 상황을 방지하기 위해 타자를 자동 아웃 처리하는 규칙.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "낫아웃",
+      "desc": "삼진 상황에서 포수가 공을 제대로 잡지 못했을 경우 1루가 비었거나 2아웃일 때 타자가 1루로 뛸 수 있는 규칙.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "보크",
+      "desc": "투수가 주자를 속이거나 규정된 투구 동작을 어겼을 때 선언되는 반칙으로, 모든 주자가 한 루씩 진루한다.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "포스플레이",
+      "desc": "타자가 땅볼을 치고 출루 의무가 생겼을 때, 수비수가 해당 베이스를 먼저 밟으면 아웃되는 규칙.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "태그업",
+      "desc": "플라이볼이 잡힌 후 주자가 베이스를 딛고 다음 루로 진루할 수 있는 규칙.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "수비방해",
+      "desc": "야수가 주자의 주루를 방해하는 경우 선언되는 반칙.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "주루방해",
+      "desc": "주자가 야수의 수비 행위를 방해하는 경우 선언되는 반칙.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "어필플레이",
+      "desc": "수비 측이 심판에게 주자의 규칙 위반을 지적해 판정을 요구하는 플레이.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "데드볼",
+      "desc": "투수가 던진 공에 타자가 맞아 자동으로 1루로 진루하는 규칙.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "볼데드",
+      "desc": "심판이 경기를 일시적으로 중단시키는 상황.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "콜드게임",
+      "desc": "점수 차이가 크게 벌어졌을 때 경기 의미가 없다고 판단되어 조기 종료되는 규칙.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "노게임",
+      "desc": "정식경기 성립 전 경기가 중단되어 승패가 무효 처리되는 경기.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "서스펜디드게임",
+      "desc": "우천이나 특수 상황으로 중단된 경기를 이후에 이어서 진행하는 경기.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "타임아웃",
+      "desc": "심판이 경기 진행을 일시적으로 중단하는 선언.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "피치클락",
+      "desc": "투수가 공을 던질 시간을 제한하는 장치로, 경기 시간을 단축하기 위한 규칙.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "자동고의4구",
+      "desc": "투수와 포수가 신호만 보내면 네 개의 볼을 던지지 않고도 고의4구를 인정하는 규칙.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "더블헤더",
+      "desc": "같은 날 같은 구장에서 두 경기를 연속으로 치르는 것.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "지명타자",
+      "desc": "투수 대신 타격만 하는 타자를 두는 제도.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "대타",
+      "desc": "경기 중 타자의 타석에 교체되어 들어가는 선수.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "대주자",
+      "desc": "주루 상황에서 타자 대신 출루해 주루를 담당하는 교체 선수.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "삼중살",
+      "desc": "한 번의 수비 플레이로 세 명의 주자가 모두 아웃되는 드문 상황.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "인터벌 규정",
+      "desc": "이닝 교대 시, 투수 교체 시 등 경기 중 일정 시간 내에 재개해야 하는 규정.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "번트 규칙",
+      "desc": "번트 시 파울이 두 번 나오면 삼진으로 처리되는 등 번트에 관한 규정.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "홈런 판정",
+      "desc": "공이 외야 펜스를 넘어가거나 홈런라인을 넘었는지에 따라 득점이 인정되는 규칙.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "비디오 판독",
+      "desc": "판정에 이의가 있을 때 비디오 영상을 통해 판정을 재검토하는 제도.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "벤치클리어링",
+      "desc": "양 팀 선수들이 벤치를 비우고 그라운드로 나오는 상황.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "통역 인원 제한",
+      "desc": "외국인 선수의 통역이 그라운드에 나올 수 있는 횟수나 인원을 제한하는 규정.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "은퇴경기 특별 등록",
+      "desc": "선수 은퇴경기 시 일시적으로 등록을 허용하는 규정.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "투수교체 제한",
+      "desc": "한 이닝 또는 경기 중 투수 교체 횟수를 제한하는 규정.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "포수 보호장비 규정",
+      "desc": "포수의 안전을 위한 보호장비 착용 의무에 관한 규정.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "주루코치 박스",
+      "desc": "1루, 3루 코치가 서야 하는 지정 구역.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "투구 제한 규정",
+      "desc": "투수의 팔 보호 및 경기 운영을 위해 투구 수를 제한하는 규정.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "포스아웃 규칙",
+      "desc": "주자가 다음 루로 진루해야 할 때 수비수가 베이스를 먼저 밟으면 아웃되는 규정.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "태그아웃 규칙",
+      "desc": "주자가 진루 중일 때 수비수가 직접 태그하면 아웃되는 규정.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "희생플라이 규정",
+      "desc": "플라이볼로 주자가 진루하거나 득점하면 타자에게 아웃과 함께 타점이 인정되는 규정.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "희생번트 규정",
+      "desc": "번트로 주자를 진루시키면 타자에게 아웃과 함께 희생번트가 기록되는 규정.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "주루방해 판정",
+      "desc": "주자가 야수의 수비를 방해했을 때 아웃 또는 진루 제한이 선언되는 판정.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "수비방해 판정",
+      "desc": "수비수가 주자의 주루를 방해했을 때 주자에게 진루가 인정되는 판정.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "플레이볼/타임 선언",
+      "desc": "심판이 경기 개시(플레이볼) 또는 일시중지(타임)를 선언하는 규정.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "페어/파울 판정",
+      "desc": "타구가 페어 지역, 파울 지역에 떨어졌는지 판단하는 규정.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "주자 충돌 방지 규정",
+      "desc": "홈이나 베이스에서 주자와 수비수의 충돌을 막기 위한 규정.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "리터치 규정",
+      "desc": "주자가 플라이볼 아웃 시 원래 베이스를 다시 밟고 진루해야 하는 규정.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "경기장 내 금지행위",
+      "desc": "경기 중 야구장 내에서 금지된 행동(예: 배트 던지기, 욕설 등)에 대한 규정.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "경기장 내 안전규정",
+      "desc": "선수와 관중의 안전을 위한 각종 규정.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "경기장 출입 제한",
+      "desc": "경기 중 벤치 외 인원의 그라운드 출입을 제한하는 규정.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "용병 출전 제한",
+      "desc": "외국인 선수의 출전 인원 및 등록 제한에 관한 규정.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "투수 강판 규정",
+      "desc": "투수가 일정 타자 또는 이닝을 상대하지 않으면 교체할 수 없는 규정(예: 3타자 상대 의무 등).",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "경기 재개 규정",
+      "desc": "우천, 정전 등으로 경기 중단 후 재개하는 절차에 관한 규정.",
+      "youtubeId": "QwZT7T-TXT0"
+    },
+    {
+      "term": "경기 몰수 규정",
+      "desc": "팀의 규정 위반 등으로 경기가 몰수 처리되는 경우에 대한 규정.",
+      "youtubeId": "2NNax0aqqqA"
+    },
+    {
+      "term": "경기 취소 규정",
+      "desc": "우천, 천재지변 등으로 경기를 취소하는 기준과 절차.",
+      "youtubeId": "w8yQJpP6f8k"
+    },
+    {
+      "term": "경기 연장 규정",
+      "desc": "정규 이닝 종료 후 동점일 때 연장전을 실시하는 규정.",
+      "youtubeId": "1Q8fG0TtVAY"
+    },
+    {
+      "term": "승부치기 규정",
+      "desc": "연장전에서 무승부 방지를 위해 특정 이닝부터 주자를 미리 두고 시작하는 규정.",
+      "youtubeId": "QwZT7T-TXT0"
+    }
+  ]
+}

@@ -67,6 +67,8 @@ flutter:
     - assets/quiz.json
     - assets/quotes.json
     - assets/diamond.png
+    - assets/trivia.json
+    - assets/dictionary.json
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
