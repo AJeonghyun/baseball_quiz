@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'quiz_page.dart';
-import 'kbo_teams.dart';
 import 'baseball_dictionary_page.dart';
 import 'baseball_field_position_page.dart';
 import 'baseball_trivia_page.dart';
@@ -64,15 +63,52 @@ class _NavigationRootState extends State<NavigationRoot> {
 
   List<Map<String, dynamic>> triviaList = [];
 
+  // 사전 자동완성용 map: term -> desc
+  final Map<String, String> _dictionary = {};
+
+  // 랜덤으로 선택된 사전 항목 (홈에 표시)
+  MapEntry<String, String>? _randomDictEntry;
+
+  bool _dictLoaded = false;
+
   @override
   void initState() {
     super.initState();
     loadQuotes();
     loadTrivia();
+    loadDictionary();
+  }
 
-    // 트리비아 샘플 데이터 BaseballTriviaPage에서 가져오기
-    // final triviaList = BaseballTriviaPage.triviaList;
-    // todayTrivia = triviaList.isNotEmpty ? (triviaList..shuffle()).first : null;
+  Future<void> loadDictionary() async {
+    try {
+      final String jsonString =
+          await rootBundle.loadString('assets/dictionary.json');
+      final Map<String, dynamic> data = json.decode(jsonString);
+      _dictionary.clear();
+      for (final entry in data.entries) {
+        final List<dynamic> list = entry.value;
+        for (final item in list) {
+          final Map<String, dynamic> m = Map<String, dynamic>.from(item);
+          final String term = (m['term'] ?? m['name'] ?? '').toString();
+          final String desc = (m['desc'] ?? '').toString();
+          if (term.isNotEmpty) _dictionary[term] = desc;
+        }
+      }
+      // 랜덤 항목 선택
+      if (_dictionary.isNotEmpty) {
+        final keys = _dictionary.keys.toList();
+        final k = keys[Random().nextInt(keys.length)];
+        _randomDictEntry = MapEntry(k, _dictionary[k]!);
+      } else {
+        _randomDictEntry = null;
+      }
+    } catch (e) {
+      // 실패해도 앱이 멈추지 않도록
+      _dictionary.clear();
+      _randomDictEntry = null;
+    } finally {
+      setState(() => _dictLoaded = true);
+    }
   }
 
   Future<void> loadQuotes() async {
@@ -96,10 +132,44 @@ class _NavigationRootState extends State<NavigationRoot> {
     });
   }
 
+  void _showDictionaryDetail(String term) {
+    final desc = _dictionary[term] ?? '설명이 없습니다.';
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text(term,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Text(desc, style: const TextStyle(fontSize: 15)),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white),
+                onPressed: () => Navigator.pop(context),
+                child: const Text('닫기'),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget bodyWidget;
     PreferredSizeWidget? appBarWidget;
+
+    final Color primary = Theme.of(context).colorScheme.primary;
 
     if (_selectedIndex == 0) {
       // 홈 화면(메인)
@@ -112,6 +182,7 @@ class _NavigationRootState extends State<NavigationRoot> {
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
       );
+
       bodyWidget = SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -119,6 +190,59 @@ class _NavigationRootState extends State<NavigationRoot> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // 검색 창 제거 — 대신 dictionary.json에서 뽑은 랜덤 항목 카드 (트리비아 카드 스타일로 변경)
+                if (_randomDictEntry != null)
+                  Card(
+                    color: Colors.white,
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () => _showDictionaryDetail(_randomDictEntry!.key),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '오늘의 용어',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              _randomDictEntry!.key,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: primary,
+                              ),
+                            ),
+                            if ((_randomDictEntry!.value ?? '').isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Text(
+                                  _randomDictEntry!.value,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black87,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ),
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
                 // 오늘의 트리비아 카드
                 if (todayTrivia != null)
                   Card(
@@ -334,11 +458,20 @@ class _NavigationRootState extends State<NavigationRoot> {
         onTap: (idx) {
           setState(() {
             _selectedIndex = idx;
+            // 홈 진입 시 todayTrivia 갱신
             if (_selectedIndex == 0) {
               todayTrivia = triviaList.isNotEmpty
                   ? Map<String, String>.from(
                       (triviaList.toList()..shuffle()).first)
                   : null;
+            }
+            // 탭 변경 시마다 dictionary에서 랜덤 항목 갱신
+            if (_dictionary.isNotEmpty) {
+              final keys = _dictionary.keys.toList();
+              final k = keys[Random().nextInt(keys.length)];
+              _randomDictEntry = MapEntry(k, _dictionary[k]!);
+            } else {
+              _randomDictEntry = null;
             }
           });
         },

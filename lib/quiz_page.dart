@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:auto_size_text/auto_size_text.dart';
-import 'kbo_teams.dart'; // 팀 색상 정보 import
+// 팀 색상 정보 import
 import 'result_page.dart'; // 결과 페이지 import
 import 'explanation_page.dart'; // 해설 페이지 import
 

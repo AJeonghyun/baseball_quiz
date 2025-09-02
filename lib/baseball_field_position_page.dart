@@ -205,10 +205,6 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
         backgroundColor: primary,
         foregroundColor: Colors.white,
         elevation: 0,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(12),
-                bottomRight: Radius.circular(12))),
       ),
       backgroundColor: bg,
       body: Padding(
@@ -237,7 +233,7 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                             horizontal: 8, vertical: 6),
                         collapsedBackgroundColor: Colors.transparent,
                         backgroundColor: Colors.transparent,
-                        title: Text('내야수 (인필드)',
+                        title: Text('내야수',
                             style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -264,7 +260,7 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                             horizontal: 8, vertical: 6),
                         collapsedBackgroundColor: Colors.transparent,
                         backgroundColor: Colors.transparent,
-                        title: Text('외야수 (아웃필드)',
+                        title: Text('외야수',
                             style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,

@@ -66,20 +66,16 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
       child: ListTile(
         contentPadding:
             const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
-        leading: CircleAvatar(
-          backgroundColor: Colors.indigo.shade50,
-          child: Icon(Icons.sports_baseball, color: Colors.indigo.shade400),
-        ),
         title: Text(
           t["term"] ?? "",
           style: const TextStyle(
-              fontWeight: FontWeight.w600, fontSize: 18, color: Colors.indigo),
+              fontWeight: FontWeight.w600, fontSize: 18, color: Colors.black),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4.0),
           child: Text(
             t["desc"] ?? "",
-            style: const TextStyle(fontSize: 15, color: Colors.black87),
+            style: const TextStyle(fontSize: 15, color: Colors.black),
           ),
         ),
         onTap: () {
@@ -111,7 +107,7 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
         title: const Text('야구 용어 사전'),
         centerTitle: true,
         backgroundColor: Colors.white,
-        foregroundColor: Colors.indigo,
+        foregroundColor: Colors.black,
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(96),
@@ -123,8 +119,10 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: "용어 또는 설명으로 검색",
-                    prefixIcon: const Icon(Icons.search, color: Colors.indigo),
+                    prefixIcon: const Icon(Icons.search, color: Colors.black),
                     filled: true,
+                    fillColor: const Color.fromARGB(
+                        179, 241, 241, 241), // 백그라운드 흰색으로 고정
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 0, horizontal: 14),
                     border: OutlineInputBorder(
@@ -132,16 +130,16 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
                       borderSide: BorderSide.none,
                     ),
                     hintStyle: const TextStyle(
-                      color: Color(0xFF8A98B2),
+                      color: Colors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
                   style: const TextStyle(
                       fontSize: 16,
-                      color: Colors.indigo,
+                      color: Colors.black,
                       fontWeight: FontWeight.w500),
-                  cursorColor: Colors.indigo,
+                  cursorColor: Colors.black,
                   onChanged: (value) {
                     setState(() {
                       searchText = value.trim();
@@ -154,8 +152,8 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
                 child: TabBar(
                   controller: _tabController,
                   isScrollable: false, // 고정
-                  labelColor: Colors.indigo.shade700,
-                  unselectedLabelColor: Colors.indigo.shade200,
+                  labelColor: Colors.black,
+                  unselectedLabelColor: Colors.black,
                   labelStyle: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 17),
                   unselectedLabelStyle:
@@ -171,6 +169,7 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
                             style: const TextStyle(
                               fontFamily: 'NotoSansKR',
                               fontSize: 15,
+                              color: Colors.black,
                             ),
                           ),
                         ),
@@ -191,7 +190,7 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
                 ? const Center(
                     child: Text(
                       "검색 결과가 없습니다.",
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
                   )
                 : ListView.builder(

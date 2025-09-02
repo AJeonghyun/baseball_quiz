@@ -250,7 +250,8 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     hintText: "트리비아를 검색해보세요",
-                    prefixIcon: const Icon(Icons.search, color: Colors.indigo),
+                    prefixIcon:
+                        const Icon(Icons.search, color: Color(0xFFF97B3F)),
                     filled: true,
                     fillColor: Colors.indigo.withOpacity(0.08),
                     contentPadding:
@@ -267,9 +268,9 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                   ),
                   style: const TextStyle(
                       fontSize: 16,
-                      color: Colors.indigo,
+                      color: Color(0xFFF97B3F),
                       fontWeight: FontWeight.w500),
-                  cursorColor: Colors.indigo,
+                  cursorColor: const Color(0xFFF97B3F),
                   onChanged: (value) {
                     setState(() {
                       _searchQuery = value.trim();
