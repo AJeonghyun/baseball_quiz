@@ -17,9 +17,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '야구 용어 퀴즈 & 상식',
+      title: '⚾️ Play Ball! ⚾️',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
         fontFamily: 'Pretendard',
         scaffoldBackgroundColor: Colors.white,
@@ -58,7 +58,6 @@ class _NavigationRootState extends State<NavigationRoot> {
   // 홈에서 필요한 상태 변수들
   List<Map<String, dynamic>> quotes = [];
   Map<String, dynamic>? currentQuote;
-  int selectedTeam = 0;
   String? dailyRuleName;
   String? dailyRuleTrivia;
   Map<String, String>? todayTrivia;
@@ -97,18 +96,8 @@ class _NavigationRootState extends State<NavigationRoot> {
     });
   }
 
-  void _refreshQuote() {
-    setState(() {
-      if (quotes.isNotEmpty) {
-        currentQuote = quotes[Random().nextInt(quotes.length)];
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final teamColor = kboTeams[selectedTeam]["color"] as Color;
-
     Widget bodyWidget;
     PreferredSizeWidget? appBarWidget;
 
@@ -116,11 +105,11 @@ class _NavigationRootState extends State<NavigationRoot> {
       // 홈 화면(메인)
       appBarWidget = AppBar(
         title: const Text(
-          '야구 용어 퀴즈 & 상식',
+          '⚾️ Play Ball! ⚾️',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         centerTitle: true,
-        backgroundColor: teamColor,
+        backgroundColor: Colors.black,
         foregroundColor: Colors.white,
       );
       bodyWidget = SafeArea(
@@ -210,6 +199,7 @@ class _NavigationRootState extends State<NavigationRoot> {
                       showDialog(
                         context: context,
                         builder: (context) => Dialog(
+                          backgroundColor: Colors.white, // 배경을 흰색으로 고정
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(18)),
                           child: Padding(
@@ -217,7 +207,8 @@ class _NavigationRootState extends State<NavigationRoot> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.quiz, color: teamColor, size: 40),
+                                const Icon(Icons.lightbulb_circle_rounded,
+                                    color: Colors.black, size: 40),
                                 const SizedBox(height: 16),
                                 const Text(
                                   '야구 용어 퀴즈 안내',
@@ -237,7 +228,7 @@ class _NavigationRootState extends State<NavigationRoot> {
                                   width: double.infinity,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: teamColor,
+                                      backgroundColor: Colors.black,
                                       foregroundColor: Colors.white,
                                       minimumSize: const Size(0, 48),
                                       shape: RoundedRectangleBorder(
@@ -249,8 +240,8 @@ class _NavigationRootState extends State<NavigationRoot> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => QuizPage(
-                                                selectedTeam: selectedTeam)),
+                                            builder: (context) =>
+                                                const QuizPage()),
                                       );
                                     },
                                     child: const Text('퀴즈 시작',
@@ -297,14 +288,13 @@ class _NavigationRootState extends State<NavigationRoot> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16)),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 18, horizontal: 16),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 16),
                     child: Row(
                       children: [
-                        Icon(Icons.info_outline, color: teamColor, size: 28),
-                        const SizedBox(width: 12),
-                        const Expanded(
+                        Icon(Icons.info_outline, color: Colors.black, size: 28),
+                        SizedBox(width: 12),
+                        Expanded(
                           child: Text(
                             '야구 용어와 상식을 재미있게 배워보세요!',
                             style:
@@ -337,6 +327,7 @@ class _NavigationRootState extends State<NavigationRoot> {
       body: bodyWidget,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.indigo,
         unselectedItemColor: Colors.grey,

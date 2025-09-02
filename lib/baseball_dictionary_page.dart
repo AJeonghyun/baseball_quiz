@@ -82,15 +82,6 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
             style: const TextStyle(fontSize: 15, color: Colors.black87),
           ),
         ),
-        trailing: Container(
-          decoration: BoxDecoration(
-            color: Colors.amber.shade50,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          padding: const EdgeInsets.all(6),
-          child:
-              const Icon(Icons.play_circle_fill, color: Colors.amber, size: 26),
-        ),
         onTap: () {
           Navigator.push(
             context,
@@ -98,7 +89,6 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
               builder: (_) => BaseballTermDetailPage(
                 term: t["term"] ?? "",
                 desc: t["desc"] ?? "",
-                youtubeId: t["youtubeId"] ?? "",
               ),
             ),
           );
@@ -135,7 +125,6 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
                     hintText: "용어 또는 설명으로 검색",
                     prefixIcon: const Icon(Icons.search, color: Colors.indigo),
                     filled: true,
-                    fillColor: Colors.indigo.withOpacity(0.08),
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 0, horizontal: 14),
                     border: OutlineInputBorder(

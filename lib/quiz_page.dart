@@ -8,8 +8,7 @@ import 'result_page.dart'; // 결과 페이지 import
 import 'explanation_page.dart'; // 해설 페이지 import
 
 class QuizPage extends StatefulWidget {
-  final int selectedTeam;
-  const QuizPage({super.key, this.selectedTeam = 0});
+  const QuizPage({super.key});
 
   @override
   State<QuizPage> createState() => _QuizPageState();
@@ -73,7 +72,6 @@ class _QuizPageState extends State<QuizPage> {
   void showExplanationDialog() {
     final q = questions[currentIndex];
     final bool isCorrect = selectedOption == q["answer"];
-    final teamColor = kboTeams[widget.selectedTeam]["color"] as Color;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -89,7 +87,7 @@ class _QuizPageState extends State<QuizPage> {
               children: [
                 Icon(
                   isCorrect ? Icons.check_circle : Icons.cancel,
-                  color: isCorrect ? teamColor : Colors.redAccent,
+                  color: isCorrect ? Colors.black : Colors.redAccent,
                   size: 48,
                 ),
                 const SizedBox(height: 16),
@@ -98,14 +96,14 @@ class _QuizPageState extends State<QuizPage> {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: isCorrect ? teamColor : Colors.redAccent,
+                    color: isCorrect ? Colors.black : Colors.redAccent,
                   ),
                 ),
                 const SizedBox(height: 18),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: teamColor.withOpacity(0.05),
+                    color: Colors.black.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -119,7 +117,8 @@ class _QuizPageState extends State<QuizPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isCorrect ? teamColor : Colors.redAccent,
+                      backgroundColor:
+                          isCorrect ? Colors.black : Colors.redAccent,
                       foregroundColor: Colors.white,
                       minimumSize: const Size(0, 48),
                       shape: RoundedRectangleBorder(
@@ -151,7 +150,6 @@ class _QuizPageState extends State<QuizPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final teamColor = kboTeams[widget.selectedTeam]["color"] as Color;
 
     if (questions.isEmpty) {
       return const Scaffold(
@@ -166,7 +164,7 @@ class _QuizPageState extends State<QuizPage> {
         title: const Text('야구 용어 퀴즈',
             style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
-        backgroundColor: teamColor,
+        backgroundColor: Colors.black,
         foregroundColor: Colors.white,
       ),
       body: Padding(
@@ -182,10 +180,10 @@ class _QuizPageState extends State<QuizPage> {
                 children: [
                   Text(
                     '문제 ${currentIndex + 1} / ${questions.length}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: teamColor,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -194,8 +192,9 @@ class _QuizPageState extends State<QuizPage> {
                     child: LinearProgressIndicator(
                       value: (currentIndex + 1) / questions.length,
                       minHeight: 10,
-                      backgroundColor: teamColor.withOpacity(0.15),
-                      valueColor: AlwaysStoppedAnimation<Color>(teamColor),
+                      backgroundColor: Colors.black.withOpacity(0.15),
+                      valueColor:
+                          const AlwaysStoppedAnimation<Color>(Colors.black),
                     ),
                   ),
                 ],
@@ -208,7 +207,7 @@ class _QuizPageState extends State<QuizPage> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: teamColor.withOpacity(0.06),
+                  color: Colors.black.withOpacity(0.06),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: AutoSizeText(
@@ -217,7 +216,7 @@ class _QuizPageState extends State<QuizPage> {
                     fontSize: 20,
                     height: 1.5,
                     fontWeight: FontWeight.bold,
-                    color: teamColor,
+                    color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 3,
@@ -240,17 +239,19 @@ class _QuizPageState extends State<QuizPage> {
                   if (showResult) {
                     if (isSelected && isAnswer) {
                       optionColor = Colors.green.shade100;
-                      border = BorderSide(color: teamColor, width: 2.5);
+                      border =
+                          const BorderSide(color: Colors.black, width: 2.5);
                     } else if (isSelected && !isAnswer) {
                       optionColor = Colors.red.shade100;
                       border = const BorderSide(color: Colors.red, width: 2.5);
                     } else if (isAnswer) {
                       optionColor = Colors.green.shade50;
-                      border = BorderSide(color: teamColor, width: 2.5);
+                      border =
+                          const BorderSide(color: Colors.black, width: 2.5);
                     }
                   } else if (isSelected) {
-                    optionColor = teamColor.withOpacity(0.08);
-                    border = BorderSide(color: teamColor, width: 2.5);
+                    optionColor = Colors.black.withOpacity(0.08);
+                    border = const BorderSide(color: Colors.black, width: 2.5);
                   }
                   return Container(
                     margin: const EdgeInsets.symmetric(vertical: 8),
@@ -272,7 +273,7 @@ class _QuizPageState extends State<QuizPage> {
                               CircleAvatar(
                                 radius: 14,
                                 backgroundColor: isSelected
-                                    ? teamColor
+                                    ? Colors.black
                                     : Colors.grey.shade300,
                                 child: Text(
                                   String.fromCharCode(65 + idx), // A, B, C, D
@@ -333,7 +334,7 @@ class _QuizPageState extends State<QuizPage> {
                           MaterialPageRoute(
                             builder: (_) => ExplanationPage(
                               explanation: q["explanation"] ?? "설명이 없습니다.",
-                              teamColor: teamColor,
+                              teamColor: Colors.black,
                             ),
                           ),
                         );
@@ -344,7 +345,7 @@ class _QuizPageState extends State<QuizPage> {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: teamColor,
+                        backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
                         minimumSize: const Size(0, 48),
                         shape: RoundedRectangleBorder(
@@ -360,7 +361,7 @@ class _QuizPageState extends State<QuizPage> {
                                   builder: (_) => ResultPage(
                                     correctCount: correctCount,
                                     totalCount: questions.length,
-                                    teamColor: teamColor,
+                                    teamColor: Colors.black,
                                   ),
                                 ),
                               );
