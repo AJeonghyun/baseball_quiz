@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'dart:math';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
@@ -7,7 +8,10 @@ import 'baseball_dictionary_page.dart';
 import 'baseball_field_position_page.dart';
 import 'baseball_trivia_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(
+      widgetsBinding: WidgetsFlutterBinding.ensureInitialized());
   runApp(const MyApp());
 }
 
@@ -77,6 +81,7 @@ class _NavigationRootState extends State<NavigationRoot> {
     loadQuotes();
     loadTrivia();
     loadDictionary();
+    FlutterNativeSplash.remove();
   }
 
   Future<void> loadDictionary() async {
