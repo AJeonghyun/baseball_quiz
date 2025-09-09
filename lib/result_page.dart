@@ -14,34 +14,34 @@ class ResultPage extends StatelessWidget {
 
   String getGrade(int score, int total) {
     final ratio = score / total;
-    if (ratio == 1) return "마스터";
-    if (ratio >= 0.8) return "고급";
-    if (ratio >= 0.5) return "중급";
-    return "초급";
+    if (ratio == 1) return "프로선수";
+    if (ratio >= 0.8) return "세미프로";
+    if (ratio >= 0.5) return "아마추어";
+    return "루키";
   }
 
   IconData getGradeIcon(String grade) {
     switch (grade) {
-      case "마스터":
+      case "프로선수":
         return Icons.emoji_events;
-      case "고급":
+      case "세미프로":
         return Icons.star;
-      case "중급":
+      case "아마추어":
         return Icons.trending_up;
-      default:
+      default: // 루키
         return Icons.school;
     }
   }
 
   Color getGradeColor(String grade) {
     switch (grade) {
-      case "마스터":
+      case "프로선수":
         return Colors.amber.shade700;
-      case "고급":
+      case "세미프로":
         return Colors.blue.shade600;
-      case "중급":
+      case "아마추어":
         return Colors.green.shade600;
-      default:
+      default: // 루키
         return Colors.grey.shade600;
     }
   }
@@ -64,14 +64,14 @@ class ResultPage extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 40),
-            // 티켓 카드
-            ClipPath(
-              clipper: TicketClipper(),
-              child: Container(
-                width: double.infinity,
+            Card(
+              elevation: 6,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              color: Colors.white,
+              child: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 36, horizontal: 28),
-                color: teamColor.withOpacity(0.08),
                 child: Column(
                   children: [
                     Icon(gradeIcon, color: gradeColor, size: 48),
@@ -79,7 +79,7 @@ class ResultPage extends StatelessWidget {
                     Text(
                       "등급: $grade",
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: gradeColor,
                       ),
@@ -88,7 +88,7 @@ class ResultPage extends StatelessWidget {
                     Text(
                       "$correctCount / $totalCount 정답",
                       style: const TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.w500,
                         color: Colors.black87,
                       ),
@@ -117,49 +117,4 @@ class ResultPage extends StatelessWidget {
       ),
     );
   }
-}
-
-// 🎟️ 티켓 모양을 위한 클리퍼
-class TicketClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    const radius = 20.0;
-    final path = Path();
-    path.moveTo(0, 0);
-    path.lineTo(size.width, 0);
-
-    path.lineTo(size.width, size.height * 0.4 - radius);
-    path.arcToPoint(
-      Offset(size.width, size.height * 0.4 + radius),
-      radius: const Radius.circular(radius),
-      clockwise: false,
-    );
-    path.lineTo(size.width, size.height * 0.6 - radius);
-    path.arcToPoint(
-      Offset(size.width, size.height * 0.6 + radius),
-      radius: const Radius.circular(radius),
-      clockwise: true,
-    );
-    path.lineTo(size.width, size.height);
-
-    path.lineTo(0, size.height);
-
-    path.lineTo(0, size.height * 0.6 + radius);
-    path.arcToPoint(
-      Offset(0, size.height * 0.6 - radius),
-      radius: const Radius.circular(radius),
-      clockwise: true,
-    );
-    path.lineTo(0, size.height * 0.4 + radius);
-    path.arcToPoint(
-      Offset(0, size.height * 0.4 - radius),
-      radius: const Radius.circular(radius),
-      clockwise: false,
-    );
-    path.lineTo(0, 0);
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
