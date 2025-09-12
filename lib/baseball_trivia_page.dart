@@ -204,9 +204,18 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
         centerTitle: true,
         title: const Column(
           children: [
-            Text('⚡️ 알쓸야잡'),
+            Text(
+              '💡 알쓸야잡 💡',
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Pretendard'),
+            ),
             Text('알아두면 쓸데없는 야구 잡학사전',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Pretendard')),
           ],
         ),
       ),

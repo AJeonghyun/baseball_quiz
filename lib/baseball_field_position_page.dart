@@ -193,7 +193,11 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
           title: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('역대 기록실', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('📋 기록실 📋',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                      fontFamily: 'Pretendard')),
               SizedBox(height: 2),
               Text('2024 시즌 기준',
                   style: TextStyle(fontSize: 12, color: Colors.white70)),

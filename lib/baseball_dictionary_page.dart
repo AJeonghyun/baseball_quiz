@@ -105,8 +105,14 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
         termsByCategory.keys.toList().cast<String>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('야구 용어 사전'),
+        title: const Text('📚 야구 용어 사전 📚'),
         centerTitle: true,
+        titleTextStyle: const TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+          fontFamily: 'Pretendard',
+        ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
