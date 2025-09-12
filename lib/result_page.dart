@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ResultPage extends StatelessWidget {
   final int correctCount;
@@ -23,13 +24,13 @@ class ResultPage extends StatelessWidget {
   IconData getGradeIcon(String grade) {
     switch (grade) {
       case "프로선수":
-        return Icons.emoji_events;
+        return FontAwesomeIcons.trophy;
       case "세미프로":
-        return Icons.star;
+        return FontAwesomeIcons.medal;
       case "아마추어":
-        return Icons.trending_up;
+        return FontAwesomeIcons.award;
       default: // 루키
-        return Icons.school;
+        return FontAwesomeIcons.graduationCap;
     }
   }
 
@@ -74,7 +75,7 @@ class ResultPage extends StatelessWidget {
                     const EdgeInsets.symmetric(vertical: 36, horizontal: 28),
                 child: Column(
                   children: [
-                    Icon(gradeIcon, color: gradeColor, size: 48),
+                    FaIcon(gradeIcon, color: gradeColor, size: 48),
                     const SizedBox(height: 16),
                     Text(
                       "등급: $grade",
@@ -99,7 +100,7 @@ class ResultPage extends StatelessWidget {
             ),
             const Spacer(),
             ElevatedButton.icon(
-              icon: const Icon(Icons.home),
+              icon: const FaIcon(FontAwesomeIcons.house),
               label: const Text("홈으로"),
               style: ElevatedButton.styleFrom(
                 backgroundColor: teamColor,

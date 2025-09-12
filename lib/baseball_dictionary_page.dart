@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'baseball_term_detail_page.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BaseballDictionaryPage extends StatefulWidget {
   const BaseballDictionaryPage({super.key});
@@ -119,7 +120,16 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: "용어 또는 설명으로 검색",
-                    prefixIcon: const Icon(Icons.search, color: Colors.black),
+                    // 아이콘에 여백을 주어 왼쪽/위쪽으로 띄워서 배치
+                    prefixIcon: const Padding(
+                      padding:
+                          EdgeInsets.only(left: 12.0, top: 6.0, bottom: 6.0),
+                      child: FaIcon(FontAwesomeIcons.magnifyingGlass,
+                          color: Colors.black),
+                    ),
+                    // 아이콘 컨테이너 최소 크기 조정(필요 시 변경)
+                    prefixIconConstraints:
+                        const BoxConstraints(minWidth: 40, minHeight: 40),
                     filled: true,
                     fillColor: const Color.fromARGB(
                         179, 241, 241, 241), // 백그라운드 흰색으로 고정

@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 // 팀 색상 정보 import
 import 'result_page.dart'; // 결과 페이지 import
 import 'explanation_page.dart'; // 해설 페이지 import
@@ -85,8 +87,10 @@ class _QuizPageState extends State<QuizPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  isCorrect ? Icons.check_circle : Icons.cancel,
+                FaIcon(
+                  isCorrect
+                      ? FontAwesomeIcons.circleCheck
+                      : FontAwesomeIcons.circleXmark,
                   color: isCorrect ? Colors.black : Colors.redAccent,
                   size: 48,
                 ),
@@ -318,7 +322,7 @@ class _QuizPageState extends State<QuizPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.lightbulb_outline),
+                      icon: const FaIcon(FontAwesomeIcons.lightbulb),
                       label: const Text("해설 보기"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.amber.shade600,

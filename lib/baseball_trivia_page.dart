@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BaseballTriviaPage extends StatefulWidget {
   final String? ruleName;
@@ -71,7 +72,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
           automaticallyImplyLeading: false,
           title: Row(
             children: [
-              const Icon(Icons.lightbulb_outline,
+              const FaIcon(FontAwesomeIcons.lightbulb,
                   color: Color(0xFFF97B3F), size: 26),
               const SizedBox(width: 8),
               Expanded(
@@ -90,7 +91,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.close, color: Colors.black54),
+              icon: const FaIcon(FontAwesomeIcons.xmark, color: Colors.black54),
               onPressed: () => Navigator.pop(context),
               tooltip: '닫기',
             ),
@@ -170,7 +171,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                   if (widget.fun != null && widget.fun!.isNotEmpty)
                     Row(
                       children: [
-                        const Icon(Icons.star,
+                        const FaIcon(FontAwesomeIcons.star,
                             color: Color(0xFFF9B03F), size: 20),
                         const SizedBox(width: 3),
                         Text(
@@ -250,8 +251,16 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     hintText: "트리비아를 검색해보세요",
-                    prefixIcon:
-                        const Icon(Icons.search, color: Color(0xFFF97B3F)),
+                    // 아이콘에 여백을 주어 왼쪽/위쪽으로 띄워서 배치
+                    prefixIcon: const Padding(
+                      padding:
+                          EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
+                      child: FaIcon(FontAwesomeIcons.magnifyingGlass,
+                          color: Color(0xFFF97B3F)),
+                    ),
+                    // 아이콘 컨테이너 최소 크기 조정
+                    prefixIconConstraints:
+                        const BoxConstraints(minWidth: 44, minHeight: 44),
                     filled: true,
                     fillColor: Colors.indigo.withOpacity(0.08),
                     contentPadding:
@@ -390,7 +399,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                                   children: [
                                     Row(
                                       children: [
-                                        const Icon(Icons.lightbulb_outline,
+                                        const FaIcon(FontAwesomeIcons.lightbulb,
                                             color: Color(0xFFF97B3F), size: 22),
                                         const SizedBox(width: 7),
                                         Expanded(
@@ -438,7 +447,8 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                                             (t['fun'] as String).isNotEmpty)
                                           Row(
                                             children: [
-                                              const Icon(Icons.star,
+                                              const FaIcon(
+                                                  FontAwesomeIcons.star,
                                                   color: Color(0xFFF9B03F),
                                                   size: 18),
                                               const SizedBox(width: 3),

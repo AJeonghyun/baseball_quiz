@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ExplanationPage extends StatelessWidget {
   final String explanation;
@@ -26,7 +27,8 @@ class ExplanationPage extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.lightbulb, color: Colors.amber.shade700, size: 32),
+                  FaIcon(FontAwesomeIcons.lightbulb,
+                      color: Colors.amber.shade700, size: 32),
                   const SizedBox(width: 12),
                   Text(
                     '꿀팁 & 해설',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:math';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
@@ -336,7 +337,7 @@ class _NavigationRootState extends State<NavigationRoot> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.lightbulb_circle_rounded,
+                                const FaIcon(FontAwesomeIcons.lightbulb,
                                     color: Colors.black, size: 40),
                                 const SizedBox(height: 16),
                                 const Text(
@@ -421,7 +422,8 @@ class _NavigationRootState extends State<NavigationRoot> {
                     padding: EdgeInsets.symmetric(vertical: 18, horizontal: 16),
                     child: Row(
                       children: [
-                        Icon(Icons.info_outline, color: Colors.black, size: 28),
+                        FaIcon(FontAwesomeIcons.circleInfo,
+                            color: Colors.black, size: 28),
                         SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -482,20 +484,20 @@ class _NavigationRootState extends State<NavigationRoot> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: FaIcon(FontAwesomeIcons.house),
             label: '홈',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book),
+            icon: FaIcon(FontAwesomeIcons.book),
             label: '용어사전',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.auto_stories),
+            icon: FaIcon(FontAwesomeIcons.bookOpenReader),
             label: '알쓸야잡',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.sports_baseball),
-            label: '포지션',
+            icon: FaIcon(FontAwesomeIcons.baseball),
+            label: '기록',
           ),
         ],
       ),
