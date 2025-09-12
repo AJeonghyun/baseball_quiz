@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: '⚾️ Play Ball ⚾️',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
@@ -181,7 +182,7 @@ class _NavigationRootState extends State<NavigationRoot> {
       // 홈 화면(메인)
       appBarWidget = AppBar(
         title: const Text(
-          '⚾️ Play Ball! ⚾️',
+          '⚾️ Play Ball ⚾️',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         centerTitle: true,

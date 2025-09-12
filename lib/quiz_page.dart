@@ -130,7 +130,26 @@ class _QuizPageState extends State<QuizPage> {
                       ),
                       elevation: 0,
                     ),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      if (isCorrect) {
+                        // 정답이면 다음 문제로 이동하거나 마지막이면 결과 페이지로 이동
+                        if (currentIndex < questions.length - 1) {
+                          nextQuestion();
+                        } else {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ResultPage(
+                                correctCount: correctCount,
+                                totalCount: questions.length,
+                                teamColor: Colors.black,
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    },
                     child: const Text("확인", style: TextStyle(fontSize: 18)),
                   ),
                 ),
