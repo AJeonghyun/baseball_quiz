@@ -35,9 +35,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   auto_size_text: ^3.0.0
-  just_audio: ^0.9.37
   provider: ^6.1.5
-  youtube_player_flutter: ^8.1.2
   google_fonts: ^6.2.0
   dynamic_tabbar: ^1.0.9
   flutter_native_splash: ^2.4.6

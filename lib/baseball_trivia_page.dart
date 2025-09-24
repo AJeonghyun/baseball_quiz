@@ -25,24 +25,33 @@ class BaseballTriviaPage extends StatefulWidget {
 
 class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   final ScrollController _listScrollController = ScrollController();
-  final ScrollController _categoryScrollController = ScrollController(); // 추가
+  final ScrollController _categoryScrollController = ScrollController();
   String _searchQuery = '';
-  String? _selectedCategory; // 선택된 카테고리
+  String? _selectedCategory;
 
-  // Load trivia data from assets/trivia.json
+  // 선언 즉시 초기화하여 LateInitializationError 방지
+  late final Future<List<Map<String, dynamic>>> _triviaFuture = loadTrivia();
+
+  // Load trivia data
   Future<List<Map<String, dynamic>>> loadTrivia() async {
     final String jsonString = await rootBundle.loadString('assets/trivia.json');
     final List<dynamic> jsonList = json.decode(jsonString);
-    // Ensure all entries are Map<String, dynamic>
     return jsonList.cast<Map<String, dynamic>>();
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     _listScrollController.dispose();
-    _categoryScrollController.dispose(); // 꼭 해제!
+    _categoryScrollController.dispose();
     super.dispose();
   }
 
@@ -220,7 +229,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
         ),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: loadTrivia(),
+        future: _triviaFuture, // 매 빌드마다 새 Future 만들지 않음
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -258,16 +267,15 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: TextField(
                   controller: _searchController,
+                  focusNode: _searchFocusNode,
                   decoration: InputDecoration(
                     hintText: "트리비아를 검색해보세요",
-                    // 아이콘에 여백을 주어 왼쪽/위쪽으로 띄워서 배치
                     prefixIcon: const Padding(
                       padding:
-                          EdgeInsets.only(left: 12.0, top: 8.0, bottom: 8.0),
+                          EdgeInsets.only(left: 12.0, top: 6.0, bottom: 6.0),
                       child: FaIcon(FontAwesomeIcons.magnifyingGlass,
                           color: Color(0xFFF97B3F)),
                     ),
-                    // 아이콘 컨테이너 최소 크기 조정
                     prefixIconConstraints:
                         const BoxConstraints(minWidth: 44, minHeight: 44),
                     filled: true,
@@ -293,6 +301,10 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                     setState(() {
                       _searchQuery = value.trim();
                     });
+                    // 이미 포커스를 잃었다면 다시 요청 (안전 장치)
+                    if (!_searchFocusNode.hasFocus) {
+                      _searchFocusNode.requestFocus();
+                    }
                   },
                 ),
               ),
@@ -453,7 +465,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                                         ),
                                         const Spacer(),
                                         if (t['fun'] != null &&
-                                            (t['fun'] as String).isNotEmpty)
+                                            t['fun'].toString().isNotEmpty)
                                           Row(
                                             children: [
                                               const FaIcon(
