@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
+import 'data/content_repository.dart';
+import 'models/content_models.dart';
 import 'baseball_term_detail_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BaseballDictionaryPage extends StatefulWidget {
-  const BaseballDictionaryPage({super.key});
+  final ContentRepository repository;
+
+  const BaseballDictionaryPage({
+    super.key,
+    required this.repository,
+  });
 
   @override
   State<BaseballDictionaryPage> createState() => _BaseballDictionaryPageState();
@@ -13,52 +18,49 @@ class BaseballDictionaryPage extends StatefulWidget {
 
 class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  TabController? _tabController;
   String searchText = "";
 
-  late Map<String, List<Map<String, String>>> termsByCategory;
-  late List<Map<String, String>> allTerms;
+  Map<String, List<DictionaryTerm>> termsByCategory = {};
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    loadTermsFromJson();
+    loadTerms();
   }
 
-  Future<void> loadTermsFromJson() async {
-    final String jsonString =
-        await rootBundle.loadString('assets/dictionary.json');
-    final Map<String, dynamic> jsonData = json.decode(jsonString);
+  Future<void> loadTerms() async {
+    final terms = await widget.repository.loadDictionaryTerms();
+    if (!mounted) return;
 
-    // Map<String, List<Map<String, String>>> 형태로 변환
-    termsByCategory = {};
-    for (final entry in jsonData.entries) {
-      final List<dynamic> list = entry.value;
-      termsByCategory[entry.key] =
-          list.map((e) => Map<String, String>.from(e)).toList();
+    final loadedTermsByCategory = <String, List<DictionaryTerm>>{};
+    for (final term in terms) {
+      loadedTermsByCategory.putIfAbsent(term.category, () => []).add(term);
     }
-    allTerms = termsByCategory.values.expand((list) => list).toList();
 
-    _tabController =
-        TabController(length: termsByCategory.keys.length, vsync: this);
+    final nextTabController = loadedTermsByCategory.isEmpty
+        ? null
+        : TabController(length: loadedTermsByCategory.keys.length, vsync: this);
 
     setState(() {
+      _tabController?.dispose();
+      termsByCategory = loadedTermsByCategory;
+      _tabController = nextTabController;
       _isLoading = false;
     });
   }
 
-  List<Map<String, String>> getFilteredTerms(String category) {
+  List<DictionaryTerm> getFilteredTerms(String category) {
     final terms = termsByCategory[category] ?? [];
     if (searchText.isEmpty) return terms;
     return terms
         .where((t) =>
-            (t["term"] ?? "").contains(searchText) ||
-            (t["desc"] ?? "").contains(searchText))
+            t.term.contains(searchText) || t.description.contains(searchText))
         .toList();
   }
 
-  Widget buildTermCard(Map<String, String> t) {
+  Widget buildTermCard(DictionaryTerm t) {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
@@ -68,14 +70,14 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
         contentPadding:
             const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
         title: Text(
-          t["term"] ?? "",
+          t.term,
           style: const TextStyle(
               fontWeight: FontWeight.w600, fontSize: 18, color: Colors.black),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4.0),
           child: Text(
-            t["desc"] ?? "",
+            t.description,
             style: const TextStyle(fontSize: 15, color: Colors.black),
           ),
         ),
@@ -84,8 +86,8 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
             context,
             MaterialPageRoute(
               builder: (_) => BaseballTermDetailPage(
-                term: t["term"] ?? "",
-                desc: t["desc"] ?? "",
+                term: t.term,
+                desc: t.description,
               ),
             ),
           );
@@ -101,8 +103,25 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    final List<String> categories =
-        termsByCategory.keys.toList().cast<String>();
+    final List<String> categories = termsByCategory.keys.toList();
+    final tabController = _tabController;
+    if (categories.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('📚 야구 용어 사전 📚'),
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+        ),
+        body: const Center(
+          child: Text(
+            "표시할 용어가 없습니다.",
+            style: TextStyle(fontSize: 16, color: Colors.black),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('📚 야구 용어 사전 📚'),
@@ -166,7 +185,7 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
               SizedBox(
                 height: 44,
                 child: TabBar(
-                  controller: _tabController,
+                  controller: tabController,
                   isScrollable: false, // 고정
                   labelColor: Colors.black,
                   unselectedLabelColor: Colors.black,
@@ -199,7 +218,7 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
         ),
       ),
       body: TabBarView(
-        controller: _tabController,
+        controller: tabController,
         children: [
           for (final cat in categories)
             getFilteredTerms(cat).isEmpty
@@ -221,5 +240,11 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    super.dispose();
   }
 }

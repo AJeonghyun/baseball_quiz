@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'dart:math';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'data/content_repository.dart';
+import 'models/content_models.dart';
 
 // 팀 색상 정보 import
 import 'result_page.dart'; // 결과 페이지 import
 import 'explanation_page.dart'; // 해설 페이지 import
 
 class QuizPage extends StatefulWidget {
-  const QuizPage({super.key});
+  final ContentRepository repository;
+
+  const QuizPage({
+    super.key,
+    required this.repository,
+  });
 
   @override
   State<QuizPage> createState() => _QuizPageState();
 }
 
 class _QuizPageState extends State<QuizPage> {
-  List<Map<String, dynamic>> questions = [];
+  List<QuizQuestion> questions = [];
   int currentIndex = 0;
   int? selectedOption;
   bool showResult = false;
@@ -30,13 +35,10 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Future<void> loadQuestions() async {
-    final String jsonString = await rootBundle.loadString('assets/quiz.json');
-    final List<dynamic> jsonData = json.decode(jsonString);
-
     final random = Random();
-    final List<Map<String, dynamic>> allQuestions =
-        jsonData.cast<Map<String, dynamic>>();
-    final List<Map<String, dynamic>> selectedQuestions = [];
+    final List<QuizQuestion> allQuestions =
+        await widget.repository.loadQuizQuestions();
+    final List<QuizQuestion> selectedQuestions = [];
     final Set<int> usedIndexes = {};
 
     while (selectedQuestions.length < 10 &&
@@ -48,6 +50,7 @@ class _QuizPageState extends State<QuizPage> {
       }
     }
 
+    if (!mounted) return;
     setState(() {
       questions = selectedQuestions;
     });
@@ -55,7 +58,7 @@ class _QuizPageState extends State<QuizPage> {
 
   void selectOption(int idx) {
     final q = questions[currentIndex];
-    final isCorrect = idx == q["answer"];
+    final isCorrect = idx == q.answer;
 
     setState(() {
       selectedOption = idx;
@@ -73,7 +76,7 @@ class _QuizPageState extends State<QuizPage> {
 
   void showExplanationDialog() {
     final q = questions[currentIndex];
-    final bool isCorrect = selectedOption == q["answer"];
+    final bool isCorrect = selectedOption == q.answer;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -107,11 +110,11 @@ class _QuizPageState extends State<QuizPage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    q["explanation"] ?? "설명이 없습니다.",
+                    q.explanation.isEmpty ? "설명이 없습니다." : q.explanation,
                     style: const TextStyle(fontSize: 16, color: Colors.black87),
                     textAlign: TextAlign.center,
                   ),
@@ -215,7 +218,7 @@ class _QuizPageState extends State<QuizPage> {
                     child: LinearProgressIndicator(
                       value: (currentIndex + 1) / questions.length,
                       minHeight: 10,
-                      backgroundColor: Colors.black.withOpacity(0.15),
+                      backgroundColor: Colors.black.withValues(alpha: 0.15),
                       valueColor:
                           const AlwaysStoppedAnimation<Color>(Colors.black),
                     ),
@@ -230,11 +233,11 @@ class _QuizPageState extends State<QuizPage> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: AutoSizeText(
-                  q["question"],
+                  q.question,
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontSize: 20,
                     height: 1.5,
@@ -252,10 +255,10 @@ class _QuizPageState extends State<QuizPage> {
             Expanded(
               child: ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: q["options"].length,
+                itemCount: q.options.length,
                 itemBuilder: (context, idx) {
                   final isSelected = selectedOption == idx;
-                  final isAnswer = q["answer"] == idx;
+                  final isAnswer = q.answer == idx;
                   Color optionColor = Colors.white;
                   BorderSide border =
                       BorderSide(color: Colors.grey.shade300, width: 1.5);
@@ -273,7 +276,7 @@ class _QuizPageState extends State<QuizPage> {
                           const BorderSide(color: Colors.black, width: 2.5);
                     }
                   } else if (isSelected) {
-                    optionColor = Colors.black.withOpacity(0.08);
+                    optionColor = Colors.black.withValues(alpha: 0.08);
                     border = const BorderSide(color: Colors.black, width: 2.5);
                   }
                   return Container(
@@ -308,7 +311,7 @@ class _QuizPageState extends State<QuizPage> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: AutoSizeText(
-                                  q["options"][idx],
+                                  q.options[idx],
                                   style: TextStyle(
                                     fontSize: 16,
                                     height: 1.4,
@@ -335,7 +338,7 @@ class _QuizPageState extends State<QuizPage> {
             // 오답이고 해설을 아직 안 본 경우 해설보기 버튼과 다음 문제 버튼을 가로로 배치
             if (showResult &&
                 selectedOption != null &&
-                selectedOption != q["answer"])
+                selectedOption != q.answer)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -356,7 +359,9 @@ class _QuizPageState extends State<QuizPage> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => ExplanationPage(
-                              explanation: q["explanation"] ?? "설명이 없습니다.",
+                              explanation: q.explanation.isEmpty
+                                  ? "설명이 없습니다."
+                                  : q.explanation,
                               teamColor: Colors.black,
                             ),
                           ),

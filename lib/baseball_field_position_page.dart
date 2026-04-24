@@ -83,7 +83,7 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 6,
               offset: const Offset(0, 3)),
         ],
@@ -92,7 +92,7 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: primary.withOpacity(0.10),
+            backgroundColor: primary.withValues(alpha: 0.10),
             child: Text(item['rank'] ?? '',
                 style: TextStyle(color: primary, fontWeight: FontWeight.bold)),
           ),
@@ -138,11 +138,13 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
       child: Row(
         children: metrics.map((m) {
           final bool isSelected = m == selected;
-          final Color bgColor =
-              isSelected ? primary.withOpacity(1.0) : surface.withOpacity(0.06);
+          final Color bgColor = isSelected
+              ? primary.withValues(alpha: 1.0)
+              : surface.withValues(alpha: 0.06);
           final Color txtColor = isSelected ? Colors.white : primary;
-          final Color borderColor =
-              isSelected ? primary.withOpacity(0.9) : primary.withOpacity(0.14);
+          final Color borderColor = isSelected
+              ? primary.withValues(alpha: 0.9)
+              : primary.withValues(alpha: 0.14);
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -159,7 +161,7 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: primary.withOpacity(0.08),
+                            color: primary.withValues(alpha: 0.08),
                             blurRadius: 6,
                             offset: const Offset(0, 3),
                           )
@@ -302,13 +304,13 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                               horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
                             color: selected
-                                ? color.withOpacity(0.95)
-                                : surface.withOpacity(0.06),
+                                ? color.withValues(alpha: 0.95)
+                                : surface.withValues(alpha: 0.06),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                                 color: selected
-                                    ? color.withOpacity(0.9)
-                                    : Colors.grey.withOpacity(0.14)),
+                                    ? color.withValues(alpha: 0.9)
+                                    : Colors.grey.withValues(alpha: 0.14)),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -339,7 +341,7 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                              color: Colors.black.withOpacity(0.03),
+                              color: Colors.black.withValues(alpha: 0.03),
                               blurRadius: 8)
                         ],
                       ),

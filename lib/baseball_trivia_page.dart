@@ -1,9 +1,10 @@
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'data/content_repository.dart';
+import 'models/content_models.dart';
 
 class BaseballTriviaPage extends StatefulWidget {
+  final ContentRepository repository;
   final String? ruleName;
   final String? trivia;
   final String? detail;
@@ -12,6 +13,7 @@ class BaseballTriviaPage extends StatefulWidget {
 
   const BaseballTriviaPage({
     super.key,
+    required this.repository,
     this.ruleName,
     this.trivia,
     this.detail,
@@ -32,18 +34,12 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
   String? _selectedCategory;
 
   // 선언 즉시 초기화하여 LateInitializationError 방지
-  late final Future<List<Map<String, dynamic>>> _triviaFuture = loadTrivia();
-
-  // Load trivia data
-  Future<List<Map<String, dynamic>>> loadTrivia() async {
-    final String jsonString = await rootBundle.loadString('assets/trivia.json');
-    final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList.cast<Map<String, dynamic>>();
-  }
+  late final Future<List<TriviaItem>> _triviaFuture;
 
   @override
   void initState() {
     super.initState();
+    _triviaFuture = widget.repository.loadTriviaItems();
   }
 
   @override
@@ -228,7 +224,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
           ],
         ),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
+      body: FutureBuilder<List<TriviaItem>>(
         future: _triviaFuture, // 매 빌드마다 새 Future 만들지 않음
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -241,7 +237,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
           // 카테고리 목록 추출 (중복 제거)
           final List<String> categories = [];
           for (final t in triviaList) {
-            final cat = (t['category'] ?? '').toString();
+            final cat = t.category;
             if (cat.isNotEmpty && !categories.contains(cat)) {
               categories.add(cat);
             }
@@ -249,9 +245,9 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
 
           // 필터링
           final filteredList = triviaList.where((t) {
-            final term = (t['term'] ?? '').toString().toLowerCase();
-            final trivia = (t['trivia'] ?? '').toString().toLowerCase();
-            final category = (t['category'] ?? '').toString();
+            final term = t.term.toLowerCase();
+            final trivia = t.trivia.toLowerCase();
+            final category = t.category;
             final query = _searchQuery.toLowerCase();
             final matchesCategory =
                 _selectedCategory == null || category == _selectedCategory;
@@ -279,7 +275,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                     prefixIconConstraints:
                         const BoxConstraints(minWidth: 44, minHeight: 44),
                     filled: true,
-                    fillColor: Colors.indigo.withOpacity(0.08),
+                    fillColor: Colors.indigo.withValues(alpha: 0.08),
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 0, horizontal: 14),
                     border: OutlineInputBorder(
@@ -391,11 +387,12 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => BaseballTriviaPage(
-                                    ruleName: t['term'],
-                                    trivia: t['trivia'],
-                                    detail: t['detail'],
-                                    category: t['category'],
-                                    fun: t['fun'],
+                                    repository: widget.repository,
+                                    ruleName: t.term,
+                                    trivia: t.trivia,
+                                    detail: t.detail,
+                                    category: t.category,
+                                    fun: t.fun,
                                   ),
                                 ),
                               );
@@ -406,7 +403,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                                 borderRadius: BorderRadius.circular(18),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.04),
+                                    color: Colors.black.withValues(alpha: 0.04),
                                     blurRadius: 6,
                                     offset: const Offset(0, 2),
                                   ),
@@ -425,7 +422,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                                         const SizedBox(width: 7),
                                         Expanded(
                                           child: Text(
-                                            t['term'] ?? '',
+                                            t.term,
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 17,
@@ -437,7 +434,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      t['trivia'] ?? '',
+                                      t.trivia,
                                       style: const TextStyle(
                                         fontSize: 15,
                                         color: Colors.black87,
@@ -455,7 +452,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                                                 BorderRadius.circular(10),
                                           ),
                                           child: Text(
-                                            t['category'] ?? '',
+                                            t.category,
                                             style: const TextStyle(
                                               color: Color(0xFFF97B3F),
                                               fontWeight: FontWeight.bold,
@@ -464,8 +461,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                                           ),
                                         ),
                                         const Spacer(),
-                                        if (t['fun'] != null &&
-                                            t['fun'].toString().isNotEmpty)
+                                        if (t.fun.isNotEmpty)
                                           Row(
                                             children: [
                                               const FaIcon(
@@ -474,7 +470,7 @@ class _BaseballTriviaPageState extends State<BaseballTriviaPage> {
                                                   size: 18),
                                               const SizedBox(width: 3),
                                               Text(
-                                                '재미도 ${t['fun']}',
+                                                '재미도 ${t.fun}',
                                                 style: const TextStyle(
                                                   color: Colors.black54,
                                                   fontWeight: FontWeight.w500,

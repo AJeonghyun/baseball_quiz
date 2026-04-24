@@ -2,22 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:math';
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
+import 'data/content_repository.dart';
+import 'models/content_models.dart';
 import 'quiz_page.dart';
 import 'baseball_dictionary_page.dart';
 import 'baseball_field_position_page.dart';
 import 'baseball_trivia_page.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(
-      widgetsBinding: WidgetsFlutterBinding.ensureInitialized());
-  runApp(const MyApp());
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  final repository = await ContentRepositoryProvider.create();
+  runApp(MyApp(repository: repository));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final ContentRepository repository;
+
+  const MyApp({
+    super.key,
+    required this.repository,
+  });
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -45,14 +51,20 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const NavigationRoot(),
+      home: NavigationRoot(repository: repository),
     );
   }
 }
 
 // 네비게이션을 전역에서 관리하는 위젯
 class NavigationRoot extends StatefulWidget {
-  const NavigationRoot({super.key});
+  final ContentRepository repository;
+
+  const NavigationRoot({
+    super.key,
+    required this.repository,
+  });
+
   @override
   State<NavigationRoot> createState() => _NavigationRootState();
 }
@@ -61,21 +73,17 @@ class _NavigationRootState extends State<NavigationRoot> {
   int _selectedIndex = 0;
 
   // 홈에서 필요한 상태 변수들
-  List<Map<String, dynamic>> quotes = [];
-  Map<String, dynamic>? currentQuote;
-  String? dailyRuleName;
-  String? dailyRuleTrivia;
-  Map<String, String>? todayTrivia;
+  List<QuoteItem> quotes = [];
+  QuoteItem? currentQuote;
+  TriviaItem? todayTrivia;
 
-  List<Map<String, dynamic>> triviaList = [];
+  List<TriviaItem> triviaList = [];
 
   // 사전 자동완성용 map: term -> desc
   final Map<String, String> _dictionary = {};
 
   // 랜덤으로 선택된 사전 항목 (홈에 표시)
   MapEntry<String, String>? _randomDictEntry;
-
-  bool _dictLoaded = false;
 
   @override
   void initState() {
@@ -88,18 +96,10 @@ class _NavigationRootState extends State<NavigationRoot> {
 
   Future<void> loadDictionary() async {
     try {
-      final String jsonString =
-          await rootBundle.loadString('assets/dictionary.json');
-      final Map<String, dynamic> data = json.decode(jsonString);
+      final terms = await widget.repository.loadDictionaryTerms();
       _dictionary.clear();
-      for (final entry in data.entries) {
-        final List<dynamic> list = entry.value;
-        for (final item in list) {
-          final Map<String, dynamic> m = Map<String, dynamic>.from(item);
-          final String term = (m['term'] ?? m['name'] ?? '').toString();
-          final String desc = (m['desc'] ?? '').toString();
-          if (term.isNotEmpty) _dictionary[term] = desc;
-        }
+      for (final term in terms) {
+        _dictionary[term.term] = term.description;
       }
       // 랜덤 항목 선택
       if (_dictionary.isNotEmpty) {
@@ -114,28 +114,29 @@ class _NavigationRootState extends State<NavigationRoot> {
       _dictionary.clear();
       _randomDictEntry = null;
     } finally {
-      setState(() => _dictLoaded = true);
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 
   Future<void> loadQuotes() async {
-    final String jsonString = await rootBundle.loadString('assets/quotes.json');
-    final List<dynamic> jsonData = json.decode(jsonString);
+    final loadedQuotes = await widget.repository.loadQuotes();
+    if (!mounted) return;
     setState(() {
-      quotes = jsonData.cast<Map<String, dynamic>>();
+      quotes = loadedQuotes;
       currentQuote =
           quotes.isNotEmpty ? quotes[Random().nextInt(quotes.length)] : null;
     });
   }
 
   Future<void> loadTrivia() async {
-    final String jsonString = await rootBundle.loadString('assets/trivia.json');
-    final List<dynamic> jsonData = json.decode(jsonString);
+    final loadedTrivia = await widget.repository.loadTriviaItems();
+    if (!mounted) return;
     setState(() {
-      triviaList = jsonData.cast<Map<String, dynamic>>();
-      todayTrivia = triviaList.isNotEmpty
-          ? ((triviaList.toList()..shuffle()).first.cast<String, String>())
-          : null;
+      triviaList = loadedTrivia;
+      todayTrivia =
+          triviaList.isNotEmpty ? (triviaList.toList()..shuffle()).first : null;
     });
   }
 
@@ -231,7 +232,7 @@ class _NavigationRootState extends State<NavigationRoot> {
                                 color: primary,
                               ),
                             ),
-                            if ((_randomDictEntry!.value ?? '').isNotEmpty)
+                            if (_randomDictEntry!.value.isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(
@@ -280,18 +281,18 @@ class _NavigationRootState extends State<NavigationRoot> {
                               ),
                             ),
                             Text(
-                              todayTrivia!['term'] ?? '',
+                              todayTrivia!.term,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.indigo,
                               ),
                             ),
-                            if ((todayTrivia!['shortDesc'] ?? '').isNotEmpty)
+                            if (todayTrivia!.shortDesc.isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(
-                                  todayTrivia!['shortDesc'] ?? '',
+                                  todayTrivia!.shortDesc,
                                   style: const TextStyle(
                                     fontSize: 15,
                                     color: Colors.indigo,
@@ -299,11 +300,11 @@ class _NavigationRootState extends State<NavigationRoot> {
                                   ),
                                 ),
                               ),
-                            if ((todayTrivia!['trivia'] ?? '').isNotEmpty)
+                            if (todayTrivia!.trivia.isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(top: 12.0),
                                 child: Text(
-                                  todayTrivia!['trivia'] ?? '',
+                                  todayTrivia!.trivia,
                                   style: const TextStyle(
                                     fontSize: 15,
                                     color: Colors.black87,
@@ -371,8 +372,9 @@ class _NavigationRootState extends State<NavigationRoot> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                const QuizPage()),
+                                            builder: (context) => QuizPage(
+                                                  repository: widget.repository,
+                                                )),
                                       );
                                     },
                                     child: const Text('퀴즈 시작',
@@ -445,10 +447,10 @@ class _NavigationRootState extends State<NavigationRoot> {
       );
     } else if (_selectedIndex == 1) {
       appBarWidget = null;
-      bodyWidget = const BaseballDictionaryPage();
+      bodyWidget = BaseballDictionaryPage(repository: widget.repository);
     } else if (_selectedIndex == 2) {
       appBarWidget = null;
-      bodyWidget = const BaseballTriviaPage();
+      bodyWidget = BaseballTriviaPage(repository: widget.repository);
     } else {
       appBarWidget = null;
       bodyWidget = const BaseballFieldPositionPage();
@@ -469,8 +471,7 @@ class _NavigationRootState extends State<NavigationRoot> {
             // 홈 진입 시 todayTrivia 갱신
             if (_selectedIndex == 0) {
               todayTrivia = triviaList.isNotEmpty
-                  ? Map<String, String>.from(
-                      (triviaList.toList()..shuffle()).first)
+                  ? (triviaList.toList()..shuffle()).first
                   : null;
             }
             // 탭 변경 시마다 dictionary에서 랜덤 항목 갱신

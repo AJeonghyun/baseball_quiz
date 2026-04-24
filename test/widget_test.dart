@@ -1,30 +1,69 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:baseball_quiz/data/content_repository.dart';
+import 'package:baseball_quiz/main.dart';
+import 'package:baseball_quiz/models/content_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:baseball_quiz/main.dart';
+class FakeContentRepository implements ContentRepository {
+  const FakeContentRepository();
+
+  @override
+  Future<List<DictionaryTerm>> loadDictionaryTerms() async {
+    return const [
+      DictionaryTerm(
+        category: '타자',
+        term: '홈런',
+        description: '타구가 펜스를 넘어 득점이 인정되는 타격.',
+      ),
+    ];
+  }
+
+  @override
+  Future<List<QuoteItem>> loadQuotes() async {
+    return const [
+      QuoteItem(quote: '야구는 끝날 때까지 끝난 게 아니다.', author: '요기 베라'),
+    ];
+  }
+
+  @override
+  Future<List<QuizQuestion>> loadQuizQuestions() async {
+    return const [
+      QuizQuestion(
+        id: 'test-question',
+        question: '타율은 무엇을 나타내는 지표인가요?',
+        options: ['안타 / 타수', '실책', '승률', '도루'],
+        answer: 0,
+        explanation: '타율은 안타를 타수로 나눈 지표입니다.',
+      ),
+    ];
+  }
+
+  @override
+  Future<List<TriviaItem>> loadTriviaItems() async {
+    return const [
+      TriviaItem(
+        category: '규칙',
+        term: '정규시즌 경기수',
+        shortDesc: '각 구단 144경기',
+        trivia: 'KBO 정규시즌은 각 구단이 144경기를 치른다.',
+        detail: '',
+        fun: '3',
+      ),
+    ];
+  }
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('shows the main navigation shell', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MyApp(repository: FakeContentRepository()),
+    );
+    await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('⚾️ Play Ball ⚾️'), findsOneWidget);
+    expect(find.text('홈'), findsOneWidget);
+    expect(find.text('용어사전'), findsOneWidget);
+    expect(find.text('알쓸야잡'), findsOneWidget);
+    expect(find.text('기록'), findsOneWidget);
+    expect(find.text('오늘의 용어'), findsOneWidget);
   });
 }
