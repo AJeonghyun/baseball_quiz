@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'app_ui.dart';
+
 class ResultPage extends StatelessWidget {
   final int correctCount;
   final int totalCount;
@@ -54,66 +56,69 @@ class ResultPage extends StatelessWidget {
     final gradeIcon = getGradeIcon(grade);
 
     return Scaffold(
+      backgroundColor: AppPalette.background,
       appBar: AppBar(
         title: const Text("퀴즈 결과"),
         centerTitle: true,
         backgroundColor: teamColor,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-            Card(
-              elevation: 6,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-              color: Colors.white,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 36, horizontal: 28),
-                child: Column(
-                  children: [
-                    FaIcon(gradeIcon, color: gradeColor, size: 48),
-                    const SizedBox(height: 16),
-                    Text(
-                      "등급: $grade",
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: gradeColor,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.screen),
+          child: Column(
+            children: [
+              const SizedBox(height: 24),
+              AppCard(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  child: Column(
+                    children: [
+                      FaIcon(gradeIcon, color: gradeColor, size: 48),
+                      const SizedBox(height: 16),
+                      Text(
+                        "등급: $grade",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: gradeColor,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      "$correctCount / $totalCount 정답",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
+                      const SizedBox(height: 12),
+                      Text(
+                        "$correctCount / $totalCount 정답",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: AppPalette.text,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 14),
+                      const Text(
+                        '틀린 문제는 해설을 다시 읽고 용어사전에서 개념을 확인해보세요.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 15,
+                          height: 1.45,
+                          color: AppPalette.textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const Spacer(),
-            ElevatedButton.icon(
-              icon: const FaIcon(FontAwesomeIcons.house),
-              label: const Text("홈으로"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: teamColor,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+              const Spacer(),
+              FilledButton.icon(
+                icon: const FaIcon(FontAwesomeIcons.house),
+                label: const Text("홈으로"),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 52),
                 ),
+                onPressed: () =>
+                    Navigator.popUntil(context, (route) => route.isFirst),
               ),
-              onPressed: () =>
-                  Navigator.popUntil(context, (route) => route.isFirst),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

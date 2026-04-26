@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+
+import 'app_ui.dart';
+import 'baseball_term_detail_page.dart';
 import 'data/content_repository.dart';
 import 'models/content_models.dart';
-import 'baseball_term_detail_page.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BaseballDictionaryPage extends StatefulWidget {
   final ContentRepository repository;
@@ -16,13 +17,12 @@ class BaseballDictionaryPage extends StatefulWidget {
   State<BaseballDictionaryPage> createState() => _BaseballDictionaryPageState();
 }
 
-class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
-    with SingleTickerProviderStateMixin {
-  TabController? _tabController;
-  String searchText = "";
-
+class _BaseballDictionaryPageState extends State<BaseballDictionaryPage> {
+  String searchText = '';
+  String? selectedCategory;
   Map<String, List<DictionaryTerm>> termsByCategory = {};
   bool _isLoading = true;
+  Object? _loadError;
 
   @override
   void initState() {
@@ -31,220 +31,193 @@ class _BaseballDictionaryPageState extends State<BaseballDictionaryPage>
   }
 
   Future<void> loadTerms() async {
-    final terms = await widget.repository.loadDictionaryTerms();
-    if (!mounted) return;
-
-    final loadedTermsByCategory = <String, List<DictionaryTerm>>{};
-    for (final term in terms) {
-      loadedTermsByCategory.putIfAbsent(term.category, () => []).add(term);
-    }
-
-    final nextTabController = loadedTermsByCategory.isEmpty
-        ? null
-        : TabController(length: loadedTermsByCategory.keys.length, vsync: this);
-
     setState(() {
-      _tabController?.dispose();
-      termsByCategory = loadedTermsByCategory;
-      _tabController = nextTabController;
-      _isLoading = false;
+      _isLoading = true;
+      _loadError = null;
     });
+
+    try {
+      final terms = await widget.repository.loadDictionaryTerms();
+      if (!mounted) return;
+
+      final loadedTermsByCategory = <String, List<DictionaryTerm>>{};
+      for (final term in terms) {
+        loadedTermsByCategory.putIfAbsent(term.category, () => []).add(term);
+      }
+
+      setState(() {
+        termsByCategory = loadedTermsByCategory;
+        selectedCategory = loadedTermsByCategory.isEmpty
+            ? null
+            : loadedTermsByCategory.keys.first;
+        _isLoading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _loadError = error;
+        _isLoading = false;
+      });
+    }
   }
 
-  List<DictionaryTerm> getFilteredTerms(String category) {
-    final terms = termsByCategory[category] ?? [];
-    if (searchText.isEmpty) return terms;
-    return terms
-        .where((t) =>
-            t.term.contains(searchText) || t.description.contains(searchText))
+  List<DictionaryTerm> get filteredTerms {
+    final category = selectedCategory;
+    final source = category == null
+        ? termsByCategory.values.expand((terms) => terms).toList()
+        : termsByCategory[category] ?? const <DictionaryTerm>[];
+
+    if (searchText.isEmpty) return source;
+    return source
+        .where((term) =>
+            term.term.contains(searchText) ||
+            term.description.contains(searchText))
         .toList();
   }
 
-  Widget buildTermCard(DictionaryTerm t) {
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
-      child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
-        title: Text(
-          t.term,
-          style: const TextStyle(
-              fontWeight: FontWeight.w600, fontSize: 18, color: Colors.black),
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4.0),
-          child: Text(
-            t.description,
-            style: const TextStyle(fontSize: 15, color: Colors.black),
-          ),
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BaseballTermDetailPage(
-                term: t.term,
-                desc: t.description,
-              ),
+  Widget buildTermCard(DictionaryTerm term) {
+    return AppCard(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BaseballTermDetailPage(
+              term: term.term,
+              desc: term.description,
             ),
-          );
-        },
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-    final List<String> categories = termsByCategory.keys.toList();
-    final tabController = _tabController;
-    if (categories.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('📚 야구 용어 사전 📚'),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-          elevation: 0,
-        ),
-        body: const Center(
-          child: Text(
-            "표시할 용어가 없습니다.",
-            style: TextStyle(fontSize: 16, color: Colors.black),
           ),
-        ),
-      );
-    }
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('📚 야구 용어 사전 📚'),
-        centerTitle: true,
-        titleTextStyle: const TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-          fontFamily: 'Pretendard',
-        ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(96),
-          child: Column(
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "용어 또는 설명으로 검색",
-                    // 아이콘에 여백을 주어 왼쪽/위쪽으로 띄워서 배치
-                    prefixIcon: const Padding(
-                      padding:
-                          EdgeInsets.only(left: 12.0, top: 6.0, bottom: 6.0),
-                      child: FaIcon(FontAwesomeIcons.magnifyingGlass,
-                          color: Colors.black),
-                    ),
-                    // 아이콘 컨테이너 최소 크기 조정(필요 시 변경)
-                    prefixIconConstraints:
-                        const BoxConstraints(minWidth: 40, minHeight: 40),
-                    filled: true,
-                    fillColor: const Color.fromARGB(
-                        179, 241, 241, 241), // 백그라운드 흰색으로 고정
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 14),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide.none,
-                    ),
-                    hintStyle: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
+              Expanded(
+                child: Text(
+                  term.term,
                   style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500),
-                  cursorColor: Colors.black,
-                  onChanged: (value) {
-                    setState(() {
-                      searchText = value.trim();
-                    });
-                  },
+                    fontWeight: FontWeight.w900,
+                    fontSize: 18,
+                    color: AppPalette.text,
+                  ),
                 ),
               ),
-              SizedBox(
-                height: 44,
-                child: TabBar(
-                  controller: tabController,
-                  isScrollable: false, // 고정
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Colors.black,
-                  labelStyle: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 17),
-                  unselectedLabelStyle:
-                      const TextStyle(fontWeight: FontWeight.normal),
-                  tabs: [
-                    for (final String cat in categories)
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width /
-                            categories.length,
-                        child: Center(
-                          child: Text(
-                            cat,
-                            style: const TextStyle(
-                              fontFamily: 'NotoSansKR',
-                              fontSize: 15,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppPalette.textMuted,
               ),
-              const SizedBox(height: 2),
             ],
           ),
-        ),
-      ),
-      body: TabBarView(
-        controller: tabController,
-        children: [
-          for (final cat in categories)
-            getFilteredTerms(cat).isEmpty
-                ? const Center(
-                    child: Text(
-                      "검색 결과가 없습니다.",
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                    ),
-                  )
-                : ListView.builder(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                    itemCount: getFilteredTerms(cat).length,
-                    itemBuilder: (context, idx) {
-                      final t = getFilteredTerms(cat)[idx];
-                      return buildTermCard(t);
-                    },
-                  ),
+          const SizedBox(height: 8),
+          Text(
+            term.description,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 15,
+              height: 1.45,
+              color: AppPalette.textMuted,
+            ),
+          ),
         ],
       ),
     );
   }
 
   @override
-  void dispose() {
-    _tabController?.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    final categories = termsByCategory.keys.toList();
+
+    return Scaffold(
+      backgroundColor: AppPalette.background,
+      appBar: AppBar(
+        title: const Text('야구 용어 사전'),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: _buildBody(categories),
+      ),
+    );
+  }
+
+  Widget _buildBody(List<String> categories) {
+    if (_isLoading) {
+      return const AppStatePanel(
+        icon: Icons.menu_book_rounded,
+        title: '용어를 불러오는 중입니다',
+        message: '야구 표현을 정리하고 있어요.',
+      );
+    }
+
+    if (_loadError != null) {
+      return AppStatePanel(
+        icon: Icons.wifi_off_rounded,
+        title: '용어를 불러오지 못했습니다',
+        message: '네트워크 상태를 확인한 뒤 다시 시도해 주세요.',
+        actionLabel: '다시 시도',
+        onAction: loadTerms,
+      );
+    }
+
+    if (categories.isEmpty) {
+      return const AppStatePanel(
+        icon: Icons.search_off_rounded,
+        title: '표시할 용어가 없습니다',
+        message: 'Supabase에 용어 데이터가 추가되면 이곳에 표시됩니다.',
+      );
+    }
+
+    final terms = filteredTerms;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+          child: TextField(
+            decoration: appSearchDecoration('용어 또는 설명으로 검색'),
+            style: const TextStyle(fontSize: 16, color: AppPalette.text),
+            cursorColor: AppPalette.primary,
+            onChanged: (value) {
+              setState(() {
+                searchText = value.trim();
+              });
+            },
+          ),
+        ),
+        SizedBox(
+          height: 42,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            itemCount: categories.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              return AppPill(
+                label: category,
+                selected: selectedCategory == category,
+                onTap: () => setState(() => selectedCategory = category),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: terms.isEmpty
+              ? const AppStatePanel(
+                  icon: Icons.manage_search_rounded,
+                  title: '검색 결과가 없습니다',
+                  message: '검색어를 바꾸거나 다른 카테고리를 선택해 보세요.',
+                )
+              : ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                  itemCount: terms.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) => buildTermCard(terms[index]),
+                ),
+        ),
+      ],
+    );
   }
 }

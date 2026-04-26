@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'app_ui.dart';
+
 class BaseballTermDetailPage extends StatefulWidget {
   final String term;
   final String desc;
@@ -18,27 +20,43 @@ class _BaseballTermDetailPageState extends State<BaseballTermDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppPalette.background,
       appBar: AppBar(
         title: Text(widget.term),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(AppSpacing.screen),
           children: [
-            Text(
-              widget.term,
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.indigo,
+            AppCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const AppPill(
+                    label: '용어',
+                    selected: true,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    widget.term,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: AppPalette.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    widget.desc,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      height: 1.65,
+                      color: AppPalette.text,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              widget.desc,
-              style: const TextStyle(fontSize: 18, color: Colors.black87),
             ),
           ],
         ),

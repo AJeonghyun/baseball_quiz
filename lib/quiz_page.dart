@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'app_ui.dart';
 import 'data/content_repository.dart';
 import 'models/content_models.dart';
 
@@ -69,6 +70,7 @@ class _QuizPageState extends State<QuizPage> {
 
     if (isCorrect) {
       Future.delayed(const Duration(milliseconds: 300), () {
+        if (!mounted) return;
         showExplanationDialog();
       });
     }
@@ -81,12 +83,13 @@ class _QuizPageState extends State<QuizPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        insetPadding: const EdgeInsets.all(20),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         child: Material(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+          color: AppPalette.surface,
+          borderRadius: BorderRadius.circular(18),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 22),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -94,8 +97,8 @@ class _QuizPageState extends State<QuizPage> {
                   isCorrect
                       ? FontAwesomeIcons.circleCheck
                       : FontAwesomeIcons.circleXmark,
-                  color: isCorrect ? Colors.black : Colors.redAccent,
-                  size: 48,
+                  color: isCorrect ? AppPalette.success : AppPalette.error,
+                  size: 42,
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -103,19 +106,23 @@ class _QuizPageState extends State<QuizPage> {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: isCorrect ? Colors.black : Colors.redAccent,
+                    color: isCorrect ? AppPalette.success : AppPalette.error,
                   ),
                 ),
                 const SizedBox(height: 18),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppPalette.surfaceMuted,
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: Text(
                     q.explanation.isEmpty ? "설명이 없습니다." : q.explanation,
-                    style: const TextStyle(fontSize: 16, color: Colors.black87),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      height: 1.55,
+                      color: AppPalette.text,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -125,7 +132,7 @@ class _QuizPageState extends State<QuizPage> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          isCorrect ? Colors.black : Colors.redAccent,
+                          isCorrect ? AppPalette.success : AppPalette.error,
                       foregroundColor: Colors.white,
                       minimumSize: const Size(0, 48),
                       shape: RoundedRectangleBorder(
@@ -146,7 +153,7 @@ class _QuizPageState extends State<QuizPage> {
                               builder: (_) => ResultPage(
                                 correctCount: correctCount,
                                 totalCount: questions.length,
-                                teamColor: Colors.black,
+                                teamColor: AppPalette.primary,
                               ),
                             ),
                           );
@@ -179,229 +186,245 @@ class _QuizPageState extends State<QuizPage> {
 
     if (questions.isEmpty) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        backgroundColor: AppPalette.background,
+        body: AppStatePanel(
+          icon: Icons.quiz_rounded,
+          title: '퀴즈를 준비하는 중입니다',
+          message: 'Supabase에서 문제를 불러오고 있어요.',
+        ),
       );
     }
 
     final q = questions[currentIndex];
 
     return Scaffold(
+      backgroundColor: AppPalette.background,
       appBar: AppBar(
-        title: const Text('야구 용어 퀴즈',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('야구 용어 퀴즈'),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: AppPalette.primary,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 진행 상황 바
-            Padding(
-              padding: const EdgeInsets.only(bottom: 24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '문제 ${currentIndex + 1} / ${questions.length}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 진행 상황 바
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '문제 ${currentIndex + 1} / ${questions.length}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppPalette.text,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: LinearProgressIndicator(
-                      value: (currentIndex + 1) / questions.length,
-                      minHeight: 10,
-                      backgroundColor: Colors.black.withValues(alpha: 0.15),
-                      valueColor:
-                          const AlwaysStoppedAnimation<Color>(Colors.black),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: (currentIndex + 1) / questions.length,
+                        minHeight: 10,
+                        backgroundColor:
+                            AppPalette.primary.withValues(alpha: 0.14),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                            AppPalette.primary),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12.0),
-              child: Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: AutoSizeText(
-                  q.question,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontSize: 20,
-                    height: 1.5,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 3,
-                  minFontSize: 14,
-                  overflow: TextOverflow.ellipsis,
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 32),
-            Expanded(
-              child: ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: q.options.length,
-                itemBuilder: (context, idx) {
-                  final isSelected = selectedOption == idx;
-                  final isAnswer = q.answer == idx;
-                  Color optionColor = Colors.white;
-                  BorderSide border =
-                      BorderSide(color: Colors.grey.shade300, width: 1.5);
-                  if (showResult) {
-                    if (isSelected && isAnswer) {
-                      optionColor = Colors.green.shade100;
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: AppPalette.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppPalette.border),
+                  ),
+                  child: AutoSizeText(
+                    q.question,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontSize: 20,
+                      height: 1.5,
+                      fontWeight: FontWeight.bold,
+                      color: AppPalette.text,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 4,
+                    minFontSize: 12,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              Expanded(
+                child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: q.options.length,
+                  itemBuilder: (context, idx) {
+                    final isSelected = selectedOption == idx;
+                    final isAnswer = q.answer == idx;
+                    Color optionColor = Colors.white;
+                    BorderSide border = const BorderSide(
+                      color: AppPalette.border,
+                      width: 1.4,
+                    );
+                    if (showResult) {
+                      if (isSelected && isAnswer) {
+                        optionColor = AppPalette.successSoft;
+                        border = const BorderSide(
+                            color: AppPalette.success, width: 2);
+                      } else if (isSelected && !isAnswer) {
+                        optionColor = AppPalette.errorSoft;
+                        border =
+                            const BorderSide(color: AppPalette.error, width: 2);
+                      } else if (isAnswer) {
+                        optionColor = AppPalette.successSoft;
+                        border = const BorderSide(
+                            color: AppPalette.success, width: 2);
+                      }
+                    } else if (isSelected) {
+                      optionColor = AppPalette.primary.withValues(alpha: 0.08);
                       border =
-                          const BorderSide(color: Colors.black, width: 2.5);
-                    } else if (isSelected && !isAnswer) {
-                      optionColor = Colors.red.shade100;
-                      border = const BorderSide(color: Colors.red, width: 2.5);
-                    } else if (isAnswer) {
-                      optionColor = Colors.green.shade50;
-                      border =
-                          const BorderSide(color: Colors.black, width: 2.5);
+                          const BorderSide(color: AppPalette.primary, width: 2);
                     }
-                  } else if (isSelected) {
-                    optionColor = Colors.black.withValues(alpha: 0.08);
-                    border = const BorderSide(color: Colors.black, width: 2.5);
-                  }
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: Material(
-                      color: optionColor,
-                      borderRadius: BorderRadius.circular(16),
-                      child: InkWell(
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: Material(
+                        color: optionColor,
                         borderRadius: BorderRadius.circular(16),
-                        onTap: showResult ? null : () => selectOption(idx),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.fromBorderSide(border),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 18),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 14,
-                                backgroundColor: isSelected
-                                    ? Colors.black
-                                    : Colors.grey.shade300,
-                                child: Text(
-                                  String.fromCharCode(65 + idx), // A, B, C, D
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: AutoSizeText(
-                                  q.options[idx],
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    height: 1.4,
-                                    color: Colors.black87,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: showResult ? null : () => selectOption(idx),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.fromBorderSide(border),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 18),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 14,
+                                  backgroundColor: isSelected
+                                      ? AppPalette.primary
+                                      : AppPalette.surfaceMuted,
+                                  child: Text(
+                                    String.fromCharCode(65 + idx), // A, B, C, D
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.white
+                                          : AppPalette.textMuted,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                  maxLines: 2,
-                                  minFontSize: 12,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 32),
-            // 오답이고 해설을 아직 안 본 경우 해설보기 버튼과 다음 문제 버튼을 가로로 배치
-            if (showResult &&
-                selectedOption != null &&
-                selectedOption != q.answer)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      icon: const FaIcon(FontAwesomeIcons.lightbulb),
-                      label: const Text("해설 보기"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber.shade600,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(0, 48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ExplanationPage(
-                              explanation: q.explanation.isEmpty
-                                  ? "설명이 없습니다."
-                                  : q.explanation,
-                              teamColor: Colors.black,
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: AutoSizeText(
+                                    q.options[idx],
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      height: 1.4,
+                                      color: AppPalette.text,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
+                                    maxLines: 3,
+                                    minFontSize: 10,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(0, 48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: currentIndex < questions.length - 1
-                          ? nextQuestion
-                          : () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ResultPage(
-                                    correctCount: correctCount,
-                                    totalCount: questions.length,
-                                    teamColor: Colors.black,
-                                  ),
-                                ),
-                              );
-                            },
-                      child: Text(currentIndex < questions.length - 1
-                          ? "다음 문제"
-                          : "퀴즈 종료"),
-                    ),
-                  ),
-                ],
+                    );
+                  },
+                ),
               ),
-          ],
+              const SizedBox(height: 32),
+              // 오답이고 해설을 아직 안 본 경우 해설보기 버튼과 다음 문제 버튼을 가로로 배치
+              if (showResult &&
+                  selectedOption != null &&
+                  selectedOption != q.answer)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        icon: const FaIcon(FontAwesomeIcons.lightbulb),
+                        label: const Text("해설 보기"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppPalette.warningSoft,
+                          foregroundColor: AppPalette.text,
+                          minimumSize: const Size(0, 48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ExplanationPage(
+                                explanation: q.explanation.isEmpty
+                                    ? "설명이 없습니다."
+                                    : q.explanation,
+                                teamColor: AppPalette.primary,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppPalette.primary,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(0, 48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: currentIndex < questions.length - 1
+                            ? nextQuestion
+                            : () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ResultPage(
+                                      correctCount: correctCount,
+                                      totalCount: questions.length,
+                                      teamColor: AppPalette.primary,
+                                    ),
+                                  ),
+                                );
+                              },
+                        child: Text(currentIndex < questions.length - 1
+                            ? "다음 문제"
+                            : "퀴즈 종료"),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
         ),
       ),
     );

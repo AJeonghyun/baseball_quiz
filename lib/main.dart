@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:math';
+import 'app_ui.dart';
 import 'data/content_repository.dart';
 import 'models/content_models.dart';
 import 'quiz_page.dart';
@@ -30,24 +31,50 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: '⚾️ Play Ball ⚾️',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppPalette.primary,
+          primary: AppPalette.primary,
+          secondary: AppPalette.accent,
+          surface: AppPalette.surface,
+        ),
         useMaterial3: true,
-        fontFamily: 'Pretendard',
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: AppPalette.background,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
+          backgroundColor: AppPalette.background,
+          foregroundColor: AppPalette.text,
           elevation: 0,
+          surfaceTintColor: Colors.transparent,
+        ),
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            backgroundColor: AppPalette.primary,
+            foregroundColor: Colors.white,
+            minimumSize: const Size(0, 50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppPalette.primary,
+            foregroundColor: Colors.white,
+            minimumSize: const Size(0, 50),
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
         ),
         textTheme: const TextTheme(
           headlineMedium: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 22,
-            color: Colors.black,
+            color: AppPalette.text,
           ),
           bodyMedium: TextStyle(
             fontSize: 16,
-            color: Colors.black87,
+            color: AppPalette.text,
           ),
         ),
       ),
@@ -145,29 +172,219 @@ class _NavigationRootState extends State<NavigationRoot> {
     showDialog(
       context: context,
       builder: (_) => Dialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        backgroundColor: AppPalette.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(term,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            Text(desc, style: const TextStyle(fontSize: 15)),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white),
-                onPressed: () => Navigator.pop(context),
-                child: const Text('닫기'),
+          padding: const EdgeInsets.all(22),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                term,
+                style: const TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.w800,
+                  color: AppPalette.primary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                desc,
+                style: const TextStyle(
+                  fontSize: 16,
+                  height: 1.55,
+                  color: AppPalette.text,
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('확인'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openQuiz() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QuizPage(repository: widget.repository),
+      ),
+    );
+  }
+
+  void _selectTab(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (_selectedIndex == 0) {
+        todayTrivia = triviaList.isNotEmpty
+            ? (triviaList.toList()..shuffle()).first
+            : null;
+      }
+      if (_dictionary.isNotEmpty) {
+        final keys = _dictionary.keys.toList();
+        final k = keys[Random().nextInt(keys.length)];
+        _randomDictEntry = MapEntry(k, _dictionary[k]!);
+      } else {
+        _randomDictEntry = null;
+      }
+    });
+  }
+
+  Widget _buildHome() {
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.screen,
+          18,
+          AppSpacing.screen,
+          28,
+        ),
+        children: [
+          const Text(
+            'Play Ball',
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w900,
+              color: AppPalette.primary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            '오늘의 용어를 익히고 퀴즈로 바로 확인해보세요.',
+            style: TextStyle(
+              fontSize: 16,
+              height: 1.45,
+              color: AppPalette.textMuted,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.section),
+          AppCard(
+            color: AppPalette.primary,
+            border: BorderSide.none,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '오늘의 학습 미션',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  '10문제로 야구 감각 점검하기',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    height: 1.25,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  '정답 해설까지 이어지는 짧은 학습 루프입니다.',
+                  style: TextStyle(color: Colors.white70, height: 1.45),
+                ),
+                const SizedBox(height: 18),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppPalette.primary,
+                  ),
+                  onPressed: _openQuiz,
+                  icon: const FaIcon(FontAwesomeIcons.play, size: 16),
+                  label: const Text('퀴즈 시작'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.section),
+          const AppSectionHeader(
+            title: '오늘 익힐 개념',
+            subtitle: '먼저 뜻을 보고, 상식과 기록으로 조금씩 넓혀갑니다.',
+          ),
+          const SizedBox(height: AppSpacing.item),
+          if (_randomDictEntry != null)
+            AppCard(
+              onTap: () => _showDictionaryDetail(_randomDictEntry!.key),
+              child: _HomeContentPreview(
+                eyebrow: '오늘의 용어',
+                title: _randomDictEntry!.key,
+                body: _randomDictEntry!.value,
+                icon: FontAwesomeIcons.book,
+                accent: AppPalette.primary,
+              ),
+            )
+          else
+            const AppStatePanel(
+              icon: Icons.menu_book_rounded,
+              title: '용어를 준비하고 있습니다',
+              message: '데이터를 불러오면 오늘의 용어를 보여드릴게요.',
+            ),
+          const SizedBox(height: AppSpacing.item),
+          if (todayTrivia != null)
+            AppCard(
+              onTap: () => _selectTab(2),
+              child: _HomeContentPreview(
+                eyebrow: '오늘의 알쓸야잡',
+                title: todayTrivia!.term,
+                body: todayTrivia!.shortDesc.isNotEmpty
+                    ? todayTrivia!.shortDesc
+                    : todayTrivia!.trivia,
+                icon: FontAwesomeIcons.lightbulb,
+                accent: AppPalette.accent,
               ),
             ),
-          ]),
-        ),
+          const SizedBox(height: AppSpacing.section),
+          Row(
+            children: [
+              Expanded(
+                child: _QuickLinkCard(
+                  title: '용어 찾기',
+                  description: '헷갈리는 표현을 바로 검색',
+                  icon: FontAwesomeIcons.magnifyingGlass,
+                  onTap: () => _selectTab(1),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _QuickLinkCard(
+                  title: '기록실',
+                  description: '역대 기록과 팀 흐름 보기',
+                  icon: FontAwesomeIcons.chartLine,
+                  onTap: () => _selectTab(3),
+                ),
+              ),
+            ],
+          ),
+          if (currentQuote != null) ...[
+            const SizedBox(height: AppSpacing.section),
+            AppCard(
+              color: AppPalette.surfaceMuted,
+              border: BorderSide.none,
+              child: Text(
+                '"${currentQuote!.quote}"\n- ${currentQuote!.author}',
+                style: const TextStyle(
+                  color: AppPalette.textMuted,
+                  fontSize: 14,
+                  height: 1.55,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -177,274 +394,15 @@ class _NavigationRootState extends State<NavigationRoot> {
     Widget bodyWidget;
     PreferredSizeWidget? appBarWidget;
 
-    final Color primary = Theme.of(context).colorScheme.primary;
-
     if (_selectedIndex == 0) {
       // 홈 화면(메인)
       appBarWidget = AppBar(
-        title: const Text(
-          '⚾️ Play Ball ⚾️',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        ),
+        title: const Text('Play Ball'),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: AppPalette.primary,
         foregroundColor: Colors.white,
       );
-
-      bodyWidget = SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // 검색 창 제거 — 대신 dictionary.json에서 뽑은 랜덤 항목 카드 (트리비아 카드 스타일로 변경)
-                if (_randomDictEntry != null)
-                  Card(
-                    color: Colors.white,
-                    elevation: 1,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => _showDictionaryDetail(_randomDictEntry!.key),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              '오늘의 용어',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              _randomDictEntry!.key,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: primary,
-                              ),
-                            ),
-                            if (_randomDictEntry!.value.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(
-                                  _randomDictEntry!.value,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black87,
-                                    height: 1.5,
-                                  ),
-                                ),
-                              ),
-                            const SizedBox(height: 10),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-
-                // 오늘의 트리비아 카드
-                if (todayTrivia != null)
-                  Card(
-                    color: Colors.white,
-                    elevation: 1,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = 2; // 트리비아 탭으로 이동
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              '오늘의 알쓸야잡',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Text(
-                              todayTrivia!.term,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.indigo,
-                              ),
-                            ),
-                            if (todayTrivia!.shortDesc.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(
-                                  todayTrivia!.shortDesc,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.indigo,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            if (todayTrivia!.trivia.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 12.0),
-                                child: Text(
-                                  todayTrivia!.trivia,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black87,
-                                    height: 1.5,
-                                  ),
-                                ),
-                              ),
-                            const SizedBox(height: 10),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 24),
-                // 퀴즈 바로가기 카드
-                Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => Dialog(
-                          backgroundColor: Colors.white, // 배경을 흰색으로 고정
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const FaIcon(FontAwesomeIcons.lightbulb,
-                                    color: Colors.black, size: 40),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  '야구 용어 퀴즈 안내',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                const Text(
-                                  '총 10문제가 랜덤으로 출제됩니다.\n각 문제의 정답을 선택하면 해설과 함께 정답 여부가 표시됩니다.',
-                                  style: TextStyle(fontSize: 16, height: 1.5),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 24),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.black,
-                                      foregroundColor: Colors.white,
-                                      minimumSize: const Size(0, 48),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => QuizPage(
-                                                  repository: widget.repository,
-                                                )),
-                                      );
-                                    },
-                                    child: const Text('퀴즈 시작',
-                                        style: TextStyle(fontSize: 18)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                    child: const Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 22, horizontal: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '오늘의 퀴즈 도전',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            '랜덤 10문제를 풀며 야구 지식을 확인하세요!',
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black87,
-                                height: 1.5),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // 앱 안내 카드
-                Card(
-                  color: Colors.grey.shade100,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-                    child: Row(
-                      children: [
-                        FaIcon(FontAwesomeIcons.circleInfo,
-                            color: Colors.black, size: 28),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            '야구 용어와 상식을 재미있게 배워보세요!',
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.black87),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        ),
-      );
+      bodyWidget = _buildHome();
     } else if (_selectedIndex == 1) {
       appBarWidget = null;
       bodyWidget = BaseballDictionaryPage(repository: widget.repository);
@@ -461,29 +419,12 @@ class _NavigationRootState extends State<NavigationRoot> {
       body: bodyWidget,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
+        backgroundColor: AppPalette.surface,
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.indigo,
-        unselectedItemColor: Colors.grey,
-        onTap: (idx) {
-          setState(() {
-            _selectedIndex = idx;
-            // 홈 진입 시 todayTrivia 갱신
-            if (_selectedIndex == 0) {
-              todayTrivia = triviaList.isNotEmpty
-                  ? (triviaList.toList()..shuffle()).first
-                  : null;
-            }
-            // 탭 변경 시마다 dictionary에서 랜덤 항목 갱신
-            if (_dictionary.isNotEmpty) {
-              final keys = _dictionary.keys.toList();
-              final k = keys[Random().nextInt(keys.length)];
-              _randomDictEntry = MapEntry(k, _dictionary[k]!);
-            } else {
-              _randomDictEntry = null;
-            }
-          });
-        },
+        selectedItemColor: AppPalette.primary,
+        unselectedItemColor: AppPalette.textMuted,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w800),
+        onTap: _selectTab,
         items: const [
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.house),
@@ -500,6 +441,126 @@ class _NavigationRootState extends State<NavigationRoot> {
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.baseball),
             label: '기록',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeContentPreview extends StatelessWidget {
+  final String eyebrow;
+  final String title;
+  final String body;
+  final IconData icon;
+  final Color accent;
+
+  const _HomeContentPreview({
+    required this.eyebrow,
+    required this.title,
+    required this.body,
+    required this.icon,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: accent.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Center(
+            child: FaIcon(icon, color: accent, size: 18),
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                eyebrow,
+                style: TextStyle(
+                  color: accent,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: AppPalette.text,
+                ),
+              ),
+              if (body.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  body,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    height: 1.45,
+                    color: AppPalette.textMuted,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _QuickLinkCard extends StatelessWidget {
+  final String title;
+  final String description;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _QuickLinkCard({
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      onTap: onTap,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FaIcon(icon, color: AppPalette.primary, size: 20),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 16,
+              color: AppPalette.text,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            description,
+            style: const TextStyle(
+              height: 1.35,
+              fontSize: 13,
+              color: AppPalette.textMuted,
+            ),
           ),
         ],
       ),

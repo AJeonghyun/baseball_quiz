@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import 'app_ui.dart';
 import 'data/content_repository.dart';
 import 'models/content_models.dart';
 
@@ -31,9 +32,9 @@ class BaseballFieldPositionPage extends StatefulWidget {
 }
 
 class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
-  final Color primary = const Color(0xFF1E3A8A);
-  final Color surface = Colors.white;
-  final Color background = const Color(0xFFF7F9FC);
+  final Color primary = AppPalette.primary;
+  final Color surface = AppPalette.surface;
+  final Color background = AppPalette.background;
 
   final Set<String> selectedTeams = {'LG'};
   late final Future<RecordRoomData> _recordRoomFuture;
@@ -54,6 +55,7 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppPalette.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -87,7 +89,8 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                 const SizedBox(height: 4),
                 Text(
                   item['team'] ?? '',
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                  style: const TextStyle(
+                      fontSize: 13, color: AppPalette.textMuted),
                 ),
               ],
             ),
@@ -107,7 +110,8 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
               const SizedBox(height: 4),
               Text(
                 item['year'] ?? '',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                style:
+                    const TextStyle(fontSize: 12, color: AppPalette.textMuted),
               ),
             ],
           ),
@@ -128,8 +132,8 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
         children: metrics.map((metric) {
           final isSelected = metric == selected;
           final bgColor =
-              isSelected ? primary : surface.withValues(alpha: 0.06);
-          final txtColor = isSelected ? Colors.white : primary;
+              isSelected ? primary.withValues(alpha: 0.10) : surface;
+          final txtColor = isSelected ? primary : AppPalette.textMuted;
           final borderColor = isSelected
               ? primary.withValues(alpha: 0.9)
               : primary.withValues(alpha: 0.14);
@@ -144,7 +148,7 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
                 decoration: BoxDecoration(
                   color: bgColor,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(999),
                   border: Border.all(color: borderColor, width: 1),
                   boxShadow: isSelected
                       ? [
@@ -185,11 +189,10 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '📋 기록실 📋',
+                '기록실',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 22,
-                  fontFamily: 'Pretendard',
                 ),
               ),
               SizedBox(height: 2),
@@ -218,20 +221,17 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
           future: _recordRoomFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return Center(
-                child: CircularProgressIndicator(color: primary),
+              return const AppStatePanel(
+                icon: Icons.leaderboard_rounded,
+                title: '기록을 불러오는 중입니다',
+                message: '선수와 팀 기록 데이터를 정리하고 있어요.',
               );
             }
             if (snapshot.hasError) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    '기록 데이터를 불러오지 못했습니다.\n${snapshot.error}',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey.shade700),
-                  ),
-                ),
+              return const AppStatePanel(
+                icon: Icons.wifi_off_rounded,
+                title: '기록을 불러오지 못했습니다',
+                message: '네트워크 상태를 확인한 뒤 다시 시도해 주세요.',
               );
             }
             final data = snapshot.data;
@@ -239,7 +239,11 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                 data.hitterRecords.isEmpty ||
                 data.pitcherRecords.isEmpty ||
                 data.teamRanks.isEmpty) {
-              return const Center(child: Text('표시할 기록 데이터가 없습니다.'));
+              return const AppStatePanel(
+                icon: Icons.search_off_rounded,
+                title: '표시할 기록 데이터가 없습니다',
+                message: 'Supabase에 기록 데이터가 추가되면 이곳에 표시됩니다.',
+              );
             }
             return _buildLoadedTabs(data);
           },
@@ -309,14 +313,13 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: selected
-                            ? color.withValues(alpha: 0.95)
-                            : surface.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(12),
+                        color:
+                            selected ? color.withValues(alpha: 0.10) : surface,
+                        borderRadius: BorderRadius.circular(999),
                         border: Border.all(
                           color: selected
-                              ? color.withValues(alpha: 0.9)
-                              : Colors.grey.withValues(alpha: 0.14),
+                              ? color.withValues(alpha: 0.8)
+                              : AppPalette.border,
                         ),
                       ),
                       child: Row(
@@ -334,7 +337,7 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                           Text(
                             team,
                             style: TextStyle(
-                              color: selected ? Colors.white : primary,
+                              color: selected ? color : AppPalette.textMuted,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -345,13 +348,23 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                 }).toList(),
               ),
               const SizedBox(height: 12),
+              Text(
+                '선택 팀: ${chartTeams.join(', ')}',
+                style: const TextStyle(
+                  color: AppPalette.textMuted,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
               Expanded(
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppPalette.surface,
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppPalette.border),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.03),
@@ -510,7 +523,7 @@ class TeamRankingChart extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppPalette.surface,
                     border: Border.all(color: borderColor, width: 1.6),
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -540,15 +553,16 @@ class TeamRankingChart extends StatelessWidget {
               maximum: yearsToShow.last.toDouble(),
               interval: 1,
               majorGridLines: const MajorGridLines(color: Colors.transparent),
-              labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+              labelStyle:
+                  const TextStyle(color: AppPalette.textMuted, fontSize: 11),
             ),
-            primaryYAxis: NumericAxis(
+            primaryYAxis: const NumericAxis(
               isInversed: true,
               minimum: 1,
               maximum: 10,
               interval: 1,
-              majorGridLines: MajorGridLines(color: Colors.grey.shade300),
-              labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+              majorGridLines: MajorGridLines(color: AppPalette.border),
+              labelStyle: TextStyle(color: AppPalette.textMuted, fontSize: 11),
             ),
             legend: const Legend(isVisible: false),
             series: seriesList,

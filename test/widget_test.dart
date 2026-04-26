@@ -92,7 +92,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('⚾️ Play Ball ⚾️'), findsOneWidget);
+    expect(find.text('Play Ball'), findsWidgets);
     expect(find.text('홈'), findsOneWidget);
     expect(find.text('용어사전'), findsOneWidget);
     expect(find.text('알쓸야잡'), findsOneWidget);
