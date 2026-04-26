@@ -1,11 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-// data 파일에서 분리한 목록들을 가져옵니다.
-import 'team_data.dart';
-import 'record_data.dart';
+
+import 'data/content_repository.dart';
+import 'models/content_models.dart';
+
+const Map<String, Color> _teamColorsByName = {
+  'LG': Color(0xFFC30452),
+  '한화': Color(0xFFFC4E00),
+  'SSG': Color(0xFFCE0E2D),
+  '삼성': Color(0xFF074CA1),
+  '롯데': Color(0xFF041E42),
+  'KIA': Color(0xFFEA0029),
+  '두산': Color(0xFF131230),
+  'KT': Color(0xFF000000),
+  'NC': Color(0xFF315288),
+  '키움': Color(0xFF570514),
+};
 
 class BaseballFieldPositionPage extends StatefulWidget {
-  const BaseballFieldPositionPage({super.key});
+  final ContentRepository repository;
+
+  const BaseballFieldPositionPage({
+    super.key,
+    required this.repository,
+  });
 
   @override
   State<BaseballFieldPositionPage> createState() =>
@@ -13,68 +31,23 @@ class BaseballFieldPositionPage extends StatefulWidget {
 }
 
 class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
-  // 색상 및 스타일
   final Color primary = const Color(0xFF1E3A8A);
   final Color surface = Colors.white;
   final Color background = const Color(0xFFF7F9FC);
 
-  // --- 팀 순위용 상태/데이터 ---
-  // x축: 2015..2025 (원 데이터는 이 범위이나 실제 표시할 데이터는 최신 10개만 사용)
-  // years: 2015..2025 (11개)
-  final List<int> years = [
-    2015,
-    2016,
-    2017,
-    2018,
-    2019,
-    2020,
-    2021,
-    2022,
-    2023,
-    2024,
-  ];
+  final Set<String> selectedTeams = {'LG'};
+  late final Future<RecordRoomData> _recordRoomFuture;
 
-  // 각 팀별 순위(2015..2025, 11개 값 — 실제 데이터로 교체)
-  final Map<String, List<int>> teamRanks = {
-    'LG': [9, 4, 6, 8, 4, 4, 4, 3, 1, 3],
-    '한화': [6, 7, 8, 3, 9, 10, 10, 10, 9, 8],
-    'SSG': [5, 6, 5, 1, 3, 9, 6, 1, 3, 6],
-    '삼성': [2, 9, 9, 6, 8, 8, 3, 7, 8, 2],
-    '롯데': [8, 8, 3, 7, 10, 7, 8, 8, 7, 7],
-    'KIA': [7, 5, 1, 5, 7, 6, 9, 5, 6, 1],
-    '두산': [1, 1, 2, 2, 1, 2, 2, 9, 5, 4],
-    'KT': [10, 10, 10, 9, 6, 3, 1, 4, 2, 5],
-    'NC': [3, 2, 4, 10, 5, 1, 7, 6, 4, 9],
-    '키움': [4, 3, 7, 4, 2, 5, 5, 2, 10, 10],
-  };
+  String? selectedHitterMetric;
+  String? selectedPitcherMetric;
 
-  // 선택된 팀들
-  final Set<String> selectedTeams = Set.from(initialSelectedTeams);
-
-  // 색 팔레트 (팀마다 사용) — 팀 추가로 색상 보강
-  final List<Color> teamColors = [
-    const Color(0xFFC30452),
-    const Color(0xFFFC4E00),
-    const Color(0xFFce0e2d),
-    const Color(0xFF074CA1),
-    const Color(0xFF041E42),
-    const Color(0xFFEA0029),
-    const Color(0xFF1A1748),
-    const Color(0xFF000000),
-    const Color(0xFF315288),
-    const Color(0xFF570514),
-  ];
-  // --- /팀 순위용 상태/데이터 ---
-
-  // hitterRecords / pitcherRecords는 lib/data/record_data.dart로 분리하여 import 했습니다.
-  // (import 'data/record_data.dart';)
-
-  // 선택된 metric 상태 (record_data.dart의 맵을 사용)
-  late String selectedHitterMetric = hitterRecords.keys.first;
-  late String selectedPitcherMetric = pitcherRecords.keys.first;
+  @override
+  void initState() {
+    super.initState();
+    _recordRoomFuture = widget.repository.loadRecordRoom();
+  }
 
   Widget _buildRecordRow(Map<String, String> item) {
-    // 선수명 / 팀명 왼쪽, 기록 / 연도 오른쪽으로 정렬
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
@@ -83,9 +56,10 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 6,
-              offset: const Offset(0, 3)),
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Row(
@@ -93,21 +67,28 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
           CircleAvatar(
             radius: 18,
             backgroundColor: primary.withValues(alpha: 0.10),
-            child: Text(item['rank'] ?? '',
-                style: TextStyle(color: primary, fontWeight: FontWeight.bold)),
+            child: Text(
+              item['rank'] ?? '',
+              style: TextStyle(color: primary, fontWeight: FontWeight.bold),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item['name'] ?? '',
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w700)),
+                Text(
+                  item['name'] ?? '',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(item['team'] ?? '',
-                    style:
-                        TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                Text(
+                  item['team'] ?? '',
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                ),
               ],
             ),
           ),
@@ -115,14 +96,19 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(item['value'] ?? '',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: primary)),
+              Text(
+                item['value'] ?? '',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: primary,
+                ),
+              ),
               const SizedBox(height: 4),
-              Text(item['year'] ?? '',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+              Text(
+                item['year'] ?? '',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
             ],
           ),
         ],
@@ -131,25 +117,27 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
   }
 
   Widget _metricChips(
-      List<String> metrics, String selected, ValueChanged<String> onSelect) {
+    List<String> metrics,
+    String selected,
+    ValueChanged<String> onSelect,
+  ) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
       child: Row(
-        children: metrics.map((m) {
-          final bool isSelected = m == selected;
-          final Color bgColor = isSelected
-              ? primary.withValues(alpha: 1.0)
-              : surface.withValues(alpha: 0.06);
-          final Color txtColor = isSelected ? Colors.white : primary;
-          final Color borderColor = isSelected
+        children: metrics.map((metric) {
+          final isSelected = metric == selected;
+          final bgColor =
+              isSelected ? primary : surface.withValues(alpha: 0.06);
+          final txtColor = isSelected ? Colors.white : primary;
+          final borderColor = isSelected
               ? primary.withValues(alpha: 0.9)
               : primary.withValues(alpha: 0.14);
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: InkWell(
-              onTap: () => onSelect(m),
+              onTap: () => onSelect(metric),
               borderRadius: BorderRadius.circular(12),
               child: Container(
                 padding:
@@ -164,16 +152,17 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
                             color: primary.withValues(alpha: 0.08),
                             blurRadius: 6,
                             offset: const Offset(0, 3),
-                          )
+                          ),
                         ]
                       : null,
                 ),
                 child: Text(
-                  m,
+                  metric,
                   style: TextStyle(
-                      color: txtColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14),
+                    color: txtColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ),
@@ -186,7 +175,7 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3, // 타자, 투수, 팀 순위
+      length: 3,
       child: Scaffold(
         backgroundColor: background,
         appBar: AppBar(
@@ -195,14 +184,19 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
           title: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('📋 기록실 📋',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
-                      fontFamily: 'Pretendard')),
+              Text(
+                '📋 기록실 📋',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                  fontFamily: 'Pretendard',
+                ),
+              ),
               SizedBox(height: 2),
-              Text('2024 시즌 기준',
-                  style: TextStyle(fontSize: 12, color: Colors.white70)),
+              Text(
+                '역대 기록 기준',
+                style: TextStyle(fontSize: 12, color: Colors.white70),
+              ),
             ],
           ),
           centerTitle: true,
@@ -220,212 +214,245 @@ class _BaseballFieldPositionPageState extends State<BaseballFieldPositionPage> {
             ],
           ),
         ),
-        body: TabBarView(
-          // 스와이프(좌/우)로 탭 전환되지 않도록 스크롤을 비활성화
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            // 타자 탭
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _metricChips(
-                      hitterRecords.keys.toList(), selectedHitterMetric, (m) {
-                    setState(() => selectedHitterMetric = m);
-                  }),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: hitterRecords[selectedHitterMetric]!.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
-                      itemBuilder: (context, idx) {
-                        final item = hitterRecords[selectedHitterMetric]![idx];
-                        return _buildRecordRow(item);
-                      },
-                    ),
+        body: FutureBuilder<RecordRoomData>(
+          future: _recordRoomFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return Center(
+                child: CircularProgressIndicator(color: primary),
+              );
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    '기록 데이터를 불러오지 못했습니다.\n${snapshot.error}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey.shade700),
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            }
+            final data = snapshot.data;
+            if (data == null ||
+                data.hitterRecords.isEmpty ||
+                data.pitcherRecords.isEmpty ||
+                data.teamRanks.isEmpty) {
+              return const Center(child: Text('표시할 기록 데이터가 없습니다.'));
+            }
+            return _buildLoadedTabs(data);
+          },
+        ),
+      ),
+    );
+  }
 
-            // 투수 탭
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _metricChips(
-                      pitcherRecords.keys.toList(), selectedPitcherMetric, (m) {
-                    setState(() => selectedPitcherMetric = m);
-                  }),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: pitcherRecords[selectedPitcherMetric]!.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
-                      itemBuilder: (context, idx) {
-                        final item =
-                            pitcherRecords[selectedPitcherMetric]![idx];
-                        return _buildRecordRow(item);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
+  Widget _buildLoadedTabs(RecordRoomData data) {
+    final hitterMetrics = data.hitterRecords.keys.toList();
+    final pitcherMetrics = data.pitcherRecords.keys.toList();
+    final selectedHitter = data.hitterRecords.containsKey(selectedHitterMetric)
+        ? selectedHitterMetric!
+        : hitterMetrics.first;
+    final selectedPitcher =
+        data.pitcherRecords.containsKey(selectedPitcherMetric)
+            ? selectedPitcherMetric!
+            : pitcherMetrics.first;
+    final availableTeams = data.teamRanks.keys.toList();
+    final selectedTeamsToShow = selectedTeams
+        .where((team) => data.teamRanks.containsKey(team))
+        .toList(growable: false);
+    final chartTeams = selectedTeamsToShow.isEmpty && availableTeams.isNotEmpty
+        ? [availableTeams.first]
+        : selectedTeamsToShow;
 
-            // 팀 순위 탭
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: teamRanks.keys.toList().asMap().entries.map((e) {
-                      final idx = e.key;
-                      final team = e.value;
-                      final selected = selectedTeams.contains(team);
-                      final color = teamColors[idx % teamColors.length];
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (selected) {
-                              selectedTeams.remove(team);
-                            } else {
-                              selectedTeams.add(team);
-                            }
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: selected
-                                ? color.withValues(alpha: 0.95)
-                                : surface.withValues(alpha: 0.06),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                                color: selected
-                                    ? color.withValues(alpha: 0.9)
-                                    : Colors.grey.withValues(alpha: 0.14)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                      color: color, shape: BoxShape.circle)),
-                              const SizedBox(width: 8),
-                              Text(team,
-                                  style: TextStyle(
-                                      color: selected ? Colors.white : primary,
-                                      fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 12),
-                  Expanded(
+    return TabBarView(
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        _recordTab(
+          metrics: hitterMetrics,
+          selectedMetric: selectedHitter,
+          records: data.hitterRecords[selectedHitter] ?? const [],
+          onSelect: (metric) => setState(() => selectedHitterMetric = metric),
+        ),
+        _recordTab(
+          metrics: pitcherMetrics,
+          selectedMetric: selectedPitcher,
+          records: data.pitcherRecords[selectedPitcher] ?? const [],
+          onSelect: (metric) => setState(() => selectedPitcherMetric = metric),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: availableTeams.asMap().entries.map((entry) {
+                  final team = entry.value;
+                  final selected = chartTeams.contains(team);
+                  final color = _teamColorsByName[team] ?? primary;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (selectedTeams.contains(team)) {
+                          selectedTeams.remove(team);
+                        } else {
+                          selectedTeams.add(team);
+                        }
+                      });
+                    },
                     child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: selected
+                            ? color.withValues(alpha: 0.95)
+                            : surface.withValues(alpha: 0.06),
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.03),
-                              blurRadius: 8)
+                        border: Border.all(
+                          color: selected
+                              ? color.withValues(alpha: 0.9)
+                              : Colors.grey.withValues(alpha: 0.14),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            team,
+                            style: TextStyle(
+                              color: selected ? Colors.white : primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
-                      child: selectedTeams.isEmpty
-                          ? const Center(
-                              child: Text('팀을 선택하세요',
-                                  style: TextStyle(color: Colors.black54)))
-                          : TeamRankingChart(
-                              years: years,
-                              teamRanks: teamRanks,
-                              teams: selectedTeams.toList(),
-                              colors: teamColors,
-                            ),
                     ),
-                  ),
-                ],
+                  );
+                }).toList(),
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: TeamRankingChart(
+                    years: data.years,
+                    teamRanks: data.teamRanks,
+                    teams: chartTeams,
+                    teamColors: _teamColorsByName,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
+      ],
+    );
+  }
+
+  Widget _recordTab({
+    required List<String> metrics,
+    required String selectedMetric,
+    required List<Map<String, String>> records,
+    required ValueChanged<String> onSelect,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _metricChips(metrics, selectedMetric, onSelect),
+          const SizedBox(height: 8),
+          Expanded(
+            child: ListView.separated(
+              itemCount: records.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (context, idx) => _buildRecordRow(records[idx]),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-// TeamRankingChart: syncfusion_flutter_charts 사용
 class TeamRankingChart extends StatelessWidget {
   final List<int> years;
   final Map<String, List<int>> teamRanks;
   final List<String> teams;
-  final List<Color> colors;
+  final Map<String, Color> teamColors;
+
   const TeamRankingChart({
     super.key,
     required this.years,
     required this.teamRanks,
     required this.teams,
-    required this.colors,
+    required this.teamColors,
   });
 
   List<int> get displayYears {
     final all = years;
     if (all.isEmpty) return [];
-    if (all.length <= 11) return all; // 2015..2025 같은 범위 전체 사용
+    if (all.length <= 11) return all;
     return all.sublist(all.length - 11);
   }
 
   List<int> _displayRanksFor(String team) {
     final all = teamRanks[team] ?? [];
-    final years = displayYears.length;
-    if (all.length >= years) return all.sublist(all.length - years);
-    final res = List<int>.from(all);
-    final fill = res.isNotEmpty ? res.last : 10;
-    while (res.length < years) {
-      res.insert(0, fill);
+    final yearCount = displayYears.length;
+    if (all.length >= yearCount) return all.sublist(all.length - yearCount);
+    final result = List<int>.from(all);
+    final fill = result.isNotEmpty ? result.last : 10;
+    while (result.length < yearCount) {
+      result.insert(0, fill);
     }
-    return res;
+    return result;
   }
 
   @override
   Widget build(BuildContext context) {
     final yearsToShow = displayYears;
-    final int n = yearsToShow.length;
+    if (yearsToShow.isEmpty || teams.isEmpty) {
+      return const Center(child: Text('팀을 선택하세요'));
+    }
 
-    // 원래 전체 팀 목록 기준 인덱스 배열 (teamColors와 매칭하기 위한 기준)
-    final List<String> baseOrder = teamRanks.keys.toList();
-
-    // Series 생성 (색상은 baseOrder 기준 인덱스로 결정)
-    final List<LineSeries<_ChartPoint, num>> seriesList =
-        teams.asMap().entries.map((e) {
-      final team = e.value;
+    final seriesList = teams.asMap().entries.map((entry) {
+      final team = entry.value;
       final ranks = _displayRanksFor(team);
-      final data = <_ChartPoint>[];
-      for (int i = 0; i < n; i++) {
-        data.add(_ChartPoint(yearsToShow[i], ranks[i]));
-      }
-      // original index in full team list
-      final originalIndex = baseOrder.indexOf(team);
-      final seriesColor = colors[originalIndex % colors.length];
+      final data = <_ChartPoint>[
+        for (int i = 0; i < yearsToShow.length; i++)
+          _ChartPoint(yearsToShow[i], ranks[i]),
+      ];
       return LineSeries<_ChartPoint, num>(
         dataSource: data,
-        xValueMapper: (_ChartPoint d, _) => d.year,
-        yValueMapper: (_ChartPoint d, _) => d.rank,
+        xValueMapper: (_ChartPoint data, _) => data.year,
+        yValueMapper: (_ChartPoint data, _) => data.rank,
         name: team,
-        color: seriesColor,
+        color: _teamColor(team),
         width: 2.2,
         markerSettings:
             const MarkerSettings(isVisible: true, width: 6, height: 6),
@@ -434,49 +461,51 @@ class TeamRankingChart extends StatelessWidget {
 
     return Column(
       children: [
-        if (teams.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Wrap(
-              spacing: 12,
-              children: teams.asMap().entries.map((e) {
-                final t = e.value;
-                final originalIndex = baseOrder.indexOf(t);
-                final c = colors[originalIndex % colors.length];
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                        width: 10,
-                        height: 10,
-                        decoration:
-                            BoxDecoration(color: c, shape: BoxShape.circle)),
-                    const SizedBox(width: 6),
-                    Text(t, style: const TextStyle(fontSize: 12)),
-                  ],
-                );
-              }).toList(),
-            ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Wrap(
+            spacing: 12,
+            children: teams.asMap().entries.map((entry) {
+              final team = entry.value;
+              final color = _teamColor(team);
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(team, style: const TextStyle(fontSize: 12)),
+                ],
+              );
+            }).toList(),
           ),
+        ),
         const SizedBox(height: 6),
         Expanded(
           child: SfCartesianChart(
             plotAreaBorderWidth: 0,
             tooltipBehavior: TooltipBehavior(
               enable: true,
-              activationMode: ActivationMode.singleTap, // 탭으로 토글
-              shouldAlwaysShow: false, // 다시 탭하면 닫히도록
+              activationMode: ActivationMode.singleTap,
+              shouldAlwaysShow: false,
               animationDuration: 0,
-              color: Colors.transparent, // 외부 오버레이 투명
-              // builder에서 series.name을 사용해 원래 색을 적용
-              builder: (dynamic data, dynamic point, dynamic series,
-                  int pointIndex, int seriesIndex) {
+              color: Colors.transparent,
+              builder: (
+                dynamic data,
+                dynamic point,
+                dynamic series,
+                int pointIndex,
+                int seriesIndex,
+              ) {
                 final seriesName = series?.name ?? '';
-                final year = (data as _ChartPoint).year;
-                final rank = (data).rank;
-                // seriesName으로 originalIndex 계산
-                final originalIndex = baseOrder.indexOf(seriesName);
-                final borderColor = colors[originalIndex % colors.length];
+                final chartPoint = data as _ChartPoint;
+                final borderColor = _teamColor(seriesName);
                 return Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -489,12 +518,18 @@ class TeamRankingChart extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(seriesName,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        seriesName,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 6),
-                      Text('$year : $rank등',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w800)),
+                      Text(
+                        '${chartPoint.year} : ${chartPoint.rank}등',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ],
                   ),
                 );
@@ -503,7 +538,7 @@ class TeamRankingChart extends StatelessWidget {
             primaryXAxis: NumericAxis(
               minimum: yearsToShow.first.toDouble(),
               maximum: yearsToShow.last.toDouble(),
-              interval: 1, // 모든 연도 라벨 표시
+              interval: 1,
               majorGridLines: const MajorGridLines(color: Colors.transparent),
               labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 11),
             ),
@@ -522,10 +557,15 @@ class TeamRankingChart extends StatelessWidget {
       ],
     );
   }
+
+  Color _teamColor(String team) {
+    return teamColors[team] ?? const Color(0xFF1E3A8A);
+  }
 }
 
 class _ChartPoint {
   final num year;
   final int rank;
+
   _ChartPoint(this.year, this.rank);
 }
