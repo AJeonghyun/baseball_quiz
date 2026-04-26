@@ -38,6 +38,39 @@ class FakeContentRepository implements ContentRepository {
   }
 
   @override
+  Future<RecordRoomData> loadRecordRoom() async {
+    return const RecordRoomData(
+      years: [2024, 2025],
+      teamRanks: {
+        'LG': [3, 1],
+        '한화': [8, 2],
+      },
+      hitterRecords: {
+        '홈런': [
+          {
+            'rank': '1',
+            'name': '르윈 디아즈',
+            'team': '삼성',
+            'value': '50',
+            'year': '2025',
+          },
+        ],
+      },
+      pitcherRecords: {
+        '승리': [
+          {
+            'rank': '1',
+            'name': '코디 폰세',
+            'team': '한화',
+            'value': '17',
+            'year': '2025',
+          },
+        ],
+      },
+    );
+  }
+
+  @override
   Future<List<TriviaItem>> loadTriviaItems() async {
     return const [
       TriviaItem(

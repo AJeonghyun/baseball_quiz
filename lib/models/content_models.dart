@@ -102,3 +102,84 @@ class QuoteItem {
     );
   }
 }
+
+class TeamRankEntry {
+  final int season;
+  final String teamName;
+  final int rank;
+  final int? wins;
+  final int? losses;
+  final int? draws;
+  final double? winRate;
+
+  const TeamRankEntry({
+    required this.season,
+    required this.teamName,
+    required this.rank,
+    this.wins,
+    this.losses,
+    this.draws,
+    this.winRate,
+  });
+
+  factory TeamRankEntry.fromSupabase(Map<String, dynamic> json) {
+    return TeamRankEntry(
+      season: (json['season'] as num).toInt(),
+      teamName: (json['team_name'] ?? '').toString(),
+      rank: (json['rank'] as num).toInt(),
+      wins: (json['wins'] as num?)?.toInt(),
+      losses: (json['losses'] as num?)?.toInt(),
+      draws: (json['draws'] as num?)?.toInt(),
+      winRate: (json['win_rate'] as num?)?.toDouble(),
+    );
+  }
+}
+
+class PlayerRecordEntry {
+  final String groupType;
+  final String metric;
+  final int rank;
+  final String playerName;
+  final String teamName;
+  final String value;
+  final String recordScope;
+  final int? achievedYear;
+
+  const PlayerRecordEntry({
+    required this.groupType,
+    required this.metric,
+    required this.rank,
+    required this.playerName,
+    required this.teamName,
+    required this.value,
+    required this.recordScope,
+    this.achievedYear,
+  });
+
+  factory PlayerRecordEntry.fromAllTimeSupabase(Map<String, dynamic> json) {
+    return PlayerRecordEntry(
+      groupType: (json['category'] ?? '').toString(),
+      metric: (json['metric'] ?? '').toString(),
+      rank: (json['rank'] as num).toInt(),
+      playerName: (json['player_name'] ?? '').toString(),
+      teamName: (json['team_name'] ?? '').toString(),
+      value: (json['value'] ?? '').toString(),
+      recordScope: (json['record_scope'] ?? '').toString(),
+      achievedYear: (json['achieved_year'] as num?)?.toInt(),
+    );
+  }
+}
+
+class RecordRoomData {
+  final List<int> years;
+  final Map<String, List<int>> teamRanks;
+  final Map<String, List<Map<String, String>>> hitterRecords;
+  final Map<String, List<Map<String, String>>> pitcherRecords;
+
+  const RecordRoomData({
+    required this.years,
+    required this.teamRanks,
+    required this.hitterRecords,
+    required this.pitcherRecords,
+  });
+}

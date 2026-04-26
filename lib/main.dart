@@ -453,7 +453,7 @@ class _NavigationRootState extends State<NavigationRoot> {
       bodyWidget = BaseballTriviaPage(repository: widget.repository);
     } else {
       appBarWidget = null;
-      bodyWidget = const BaseballFieldPositionPage();
+      bodyWidget = BaseballFieldPositionPage(repository: widget.repository);
     }
 
     return Scaffold(
