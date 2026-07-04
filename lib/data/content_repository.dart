@@ -10,6 +10,11 @@ abstract class ContentRepository {
 
   Future<List<QuizQuestion>> loadQuizQuestions();
 
+  Future<QuizAnswerResult> checkQuizAnswer({
+    required String questionId,
+    required String optionId,
+  });
+
   Future<List<QuoteItem>> loadQuotes();
 
   Future<RecordRoomData> loadRecordRoom();
@@ -55,8 +60,7 @@ class SupabaseContentRepository implements ContentRepository {
   Future<List<QuizQuestion>> loadQuizQuestions() async {
     final rows = await _client
         .from('quiz_questions')
-        .select(
-            'id, question, explanation, quiz_options(option_text, is_correct, sort_order)')
+        .select('id, question, quiz_options(id, option_text, sort_order)')
         .eq('published', true)
         .order('sort_order');
 
@@ -69,8 +73,31 @@ class SupabaseContentRepository implements ContentRepository {
           return QuizQuestion.fromSupabase(questionRow, options);
         })
         .where((question) =>
-            question.question.isNotEmpty && question.options.isNotEmpty)
+            question.id.isNotEmpty &&
+            question.question.isNotEmpty &&
+            question.optionIds.every((id) => id.isNotEmpty) &&
+            question.options.isNotEmpty)
         .toList();
+  }
+
+  @override
+  Future<QuizAnswerResult> checkQuizAnswer({
+    required String questionId,
+    required String optionId,
+  }) async {
+    final rows = await _client.rpc(
+      'check_quiz_answer',
+      params: {
+        'p_question_id': questionId,
+        'p_option_id': optionId,
+      },
+    );
+    if (rows is! List || rows.isEmpty || rows.first is! Map) {
+      throw StateError('Supabase returned an invalid quiz answer response.');
+    }
+    return QuizAnswerResult.fromSupabase(
+      Map<String, dynamic>.from(rows.first as Map),
+    );
   }
 
   @override

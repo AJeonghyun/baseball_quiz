@@ -26,8 +26,11 @@ class _QuizPageState extends State<QuizPage> {
   int currentIndex = 0;
   int? selectedOption;
   bool showResult = false;
-  bool showExplanation = false; // 추가: 설명 표시 여부
-  int correctCount = 0; // <- 추가
+  bool isCheckingAnswer = false;
+  bool? selectedAnswerIsCorrect;
+  String answerExplanation = '';
+  int correctCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -56,27 +59,50 @@ class _QuizPageState extends State<QuizPage> {
     });
   }
 
-  void selectOption(int idx) {
-    final q = questions[currentIndex];
-    final isCorrect = idx == q.answer;
+  Future<void> selectOption(int idx) async {
+    if (showResult || isCheckingAnswer) return;
 
+    final q = questions[currentIndex];
     setState(() {
       selectedOption = idx;
-      showResult = true;
-      showExplanation = !isCorrect; // 오답일 때만 설명 표시
-      if (isCorrect) correctCount++;
+      isCheckingAnswer = true;
     });
 
-    if (isCorrect) {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        showExplanationDialog();
+    try {
+      final result = await widget.repository.checkQuizAnswer(
+        questionId: q.id,
+        optionId: q.optionIds[idx],
+      );
+      if (!mounted) return;
+
+      setState(() {
+        isCheckingAnswer = false;
+        selectedAnswerIsCorrect = result.isCorrect;
+        answerExplanation = result.explanation;
+        showResult = true;
+        if (result.isCorrect) correctCount++;
       });
+
+      if (result.isCorrect) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) showExplanationDialog();
+        });
+      }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        selectedOption = null;
+        isCheckingAnswer = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('정답을 확인하지 못했습니다. 다시 시도해 주세요.')),
+      );
     }
   }
 
   void showExplanationDialog() {
-    final q = questions[currentIndex];
-    final bool isCorrect = selectedOption == q.answer;
+    final isCorrect = selectedAnswerIsCorrect == true;
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -114,7 +140,7 @@ class _QuizPageState extends State<QuizPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    q.explanation.isEmpty ? "설명이 없습니다." : q.explanation,
+                    answerExplanation.isEmpty ? "설명이 없습니다." : answerExplanation,
                     style: const TextStyle(fontSize: 16, color: Colors.black87),
                     textAlign: TextAlign.center,
                   ),
@@ -136,7 +162,6 @@ class _QuizPageState extends State<QuizPage> {
                     onPressed: () {
                       Navigator.of(context).pop();
                       if (isCorrect) {
-                        // 정답이면 다음 문제로 이동하거나 마지막이면 결과 페이지로 이동
                         if (currentIndex < questions.length - 1) {
                           nextQuestion();
                         } else {
@@ -169,7 +194,8 @@ class _QuizPageState extends State<QuizPage> {
       currentIndex++;
       selectedOption = null;
       showResult = false;
-      showExplanation = false;
+      selectedAnswerIsCorrect = null;
+      answerExplanation = '';
     });
   }
 
@@ -258,22 +284,19 @@ class _QuizPageState extends State<QuizPage> {
                 itemCount: q.options.length,
                 itemBuilder: (context, idx) {
                   final isSelected = selectedOption == idx;
-                  final isAnswer = q.answer == idx;
+                  final isCorrectSelection =
+                      isSelected && selectedAnswerIsCorrect == true;
                   Color optionColor = Colors.white;
                   BorderSide border =
                       BorderSide(color: Colors.grey.shade300, width: 1.5);
                   if (showResult) {
-                    if (isSelected && isAnswer) {
+                    if (isCorrectSelection) {
                       optionColor = Colors.green.shade100;
                       border =
                           const BorderSide(color: Colors.black, width: 2.5);
-                    } else if (isSelected && !isAnswer) {
+                    } else if (isSelected) {
                       optionColor = Colors.red.shade100;
                       border = const BorderSide(color: Colors.red, width: 2.5);
-                    } else if (isAnswer) {
-                      optionColor = Colors.green.shade50;
-                      border =
-                          const BorderSide(color: Colors.black, width: 2.5);
                     }
                   } else if (isSelected) {
                     optionColor = Colors.black.withValues(alpha: 0.08);
@@ -286,7 +309,9 @@ class _QuizPageState extends State<QuizPage> {
                       borderRadius: BorderRadius.circular(16),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(16),
-                        onTap: showResult ? null : () => selectOption(idx),
+                        onTap: showResult || isCheckingAnswer
+                            ? null
+                            : () => selectOption(idx),
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
@@ -338,7 +363,7 @@ class _QuizPageState extends State<QuizPage> {
             // 오답이고 해설을 아직 안 본 경우 해설보기 버튼과 다음 문제 버튼을 가로로 배치
             if (showResult &&
                 selectedOption != null &&
-                selectedOption != q.answer)
+                selectedAnswerIsCorrect == false)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -359,9 +384,9 @@ class _QuizPageState extends State<QuizPage> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => ExplanationPage(
-                              explanation: q.explanation.isEmpty
+                              explanation: answerExplanation.isEmpty
                                   ? "설명이 없습니다."
-                                  : q.explanation,
+                                  : answerExplanation,
                               teamColor: Colors.black,
                             ),
                           ),
