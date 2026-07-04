@@ -30,11 +30,21 @@ class FakeContentRepository implements ContentRepository {
       QuizQuestion(
         id: 'test-question',
         question: '타율은 무엇을 나타내는 지표인가요?',
+        optionIds: ['option-1', 'option-2', 'option-3', 'option-4'],
         options: ['안타 / 타수', '실책', '승률', '도루'],
-        answer: 0,
-        explanation: '타율은 안타를 타수로 나눈 지표입니다.',
       ),
     ];
+  }
+
+  @override
+  Future<QuizAnswerResult> checkQuizAnswer({
+    required String questionId,
+    required String optionId,
+  }) async {
+    return QuizAnswerResult(
+      isCorrect: optionId == 'option-1',
+      explanation: '타율은 안타를 타수로 나눈 지표입니다.',
+    );
   }
 
   @override

@@ -22,7 +22,8 @@ Without configured values, the app fails fast at startup. Runtime content is sto
 ## Setup
 
 1. Create a Supabase project.
-2. Run `supabase/migrations/20260424150000_create_content_tables.sql` in the SQL editor or with the Supabase CLI.
+2. Apply every file in `supabase/migrations` in filename order, or use the
+   Supabase CLI.
 3. Set `SUPABASE_DB_URL` in `.env` using the database connection string from Supabase.
 4. Apply the schema and seed data:
 
@@ -30,4 +31,6 @@ Without configured values, the app fails fast at startup. Runtime content is sto
 tools/apply_supabase_migration.sh
 ```
 
-The migration enables row-level security and permits public read access only for rows where `published = true`.
+The migrations enable row-level security, grant only the public read
+permissions used by the app, and keep quiz answers behind the
+`check_quiz_answer` RPC.

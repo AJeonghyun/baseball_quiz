@@ -50,16 +50,14 @@ class TriviaItem {
 class QuizQuestion {
   final String id;
   final String question;
+  final List<String> optionIds;
   final List<String> options;
-  final int answer;
-  final String explanation;
 
   const QuizQuestion({
     required this.id,
     required this.question,
+    required this.optionIds,
     required this.options,
-    required this.answer,
-    required this.explanation,
   });
 
   factory QuizQuestion.fromSupabase(
@@ -71,16 +69,32 @@ class QuizQuestion {
         (a, b) => (a['sort_order'] as int? ?? 0)
             .compareTo(b['sort_order'] as int? ?? 0),
       );
-    final answerIndex =
-        sortedOptions.indexWhere((option) => option['is_correct'] == true);
 
     return QuizQuestion(
       id: (json['id'] ?? '').toString(),
       question: (json['question'] ?? '').toString(),
+      optionIds: sortedOptions
+          .map((option) => (option['id'] ?? '').toString())
+          .toList(),
       options: sortedOptions
           .map((option) => (option['option_text'] ?? '').toString())
           .toList(),
-      answer: answerIndex < 0 ? 0 : answerIndex,
+    );
+  }
+}
+
+class QuizAnswerResult {
+  final bool isCorrect;
+  final String explanation;
+
+  const QuizAnswerResult({
+    required this.isCorrect,
+    required this.explanation,
+  });
+
+  factory QuizAnswerResult.fromSupabase(Map<String, dynamic> json) {
+    return QuizAnswerResult(
+      isCorrect: json['is_correct'] == true,
       explanation: (json['explanation'] ?? '').toString(),
     );
   }
